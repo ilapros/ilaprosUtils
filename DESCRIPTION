@@ -3,11 +3,14 @@ Title: A miscellaneous collection of functions I tend to use
 Version: 0.1
 Authors@R: "Ilaria Prosdocimi <ilapro@ceh.ac.uk> [aut, cre]"
 Description: Some functions I use to handle the flow/rainfall data I get. And
-    some addition to the ismev pacakge hat I find useful (notably, fitting the
+    some addition to the ismev pacakge that I find useful (notably, fitting the
     GLO distribution as well). Some stuff on Lmoments as well - which mostly
-    need lmom to be loaded
+    need lmom to be loaded.
 Depends:
     R (>= 3.1.0)
+Imports:
+	lmom,
+	ismev
 License: GPL3.0
 LazyData: true
 Roxygen: list(wrap = FALSE)

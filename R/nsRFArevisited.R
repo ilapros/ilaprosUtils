@@ -4,11 +4,14 @@
 ### also uses lmom functions rather than the nsRFA ones now
 
 #' Modified functions from nsRFA
-#'
+#' @description A modified version of the \code{nsRFA::gofXXXtest}. 
+#' The main differences are in the pvalues: this one are correct, the original ones are 1-pvalue.
+#' In the code lmoments are estimated using the lmom library
+#' @name GOF tests
+#' @family nsRFA GOF tests
 #' @param x the vector to be tested
 #' @param Nsim the number of simulations which should be run
 #' @return The A2 statistics and the CORRECT p value
-#' @aliases gofGLOtest
 #' @export
 gofGEVtest_ip <- function (x, Nsim = 10000) 
 {
@@ -40,7 +43,9 @@ gofGEVtest_ip <- function (x, Nsim = 10000)
     return(output)
 }
 
-
+#' @name GOF tests
+#' @family nsRFA GOF tests
+#' @export
 gofGLOtest_ip <- function (x, Nsim = 10000) {
     x <- sort(x)
     n <- length(x)

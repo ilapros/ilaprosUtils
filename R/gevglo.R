@@ -13,13 +13,13 @@
 #' @details Extra care should be taken on the shape parameter of the distribution as the HW and the Coles' version differ in the sign of the shape parameter: be careful!
 #' @return These function mimic the standard output of distributions in R see \code{?pnorm}.  
 #' @family gev distribution
-#' @examples plot(seq(-15,40,by=0.2),dgev(seq(-15,40,by=0.2),4,6,0.2),type="l")
+#' @export
+#' @examples 
+#' plot(seq(-15,40,by=0.2),dgev(seq(-15,40,by=0.2),4,6,0.2),type="l")
 #' plot(ecdf(rgev(100,4,6,0.2)))
 #' lines(seq(-15,40,by=0.5),pgev(seq(-15,40,by=0.5),4,6,0.2),col=2)
 #' qgev(c(0.5,0.99,0.995,0.995,0.999),4,6,0.2) # the 1-in-2years, 1-in-100years, 1-in-200years, 1-in-1000years events
-#' 
-dgev<-function(x,loc,scale,sh)
-{
+dgev<-function(x,loc,scale,sh){
   # Density function
   if(sh> -1e-07 & sh< 1e-07) {tx<-exp(-(x-loc)/scale)}
   else {tx<-(1+(-(x-loc)/scale)*sh)^(1/sh)}
@@ -29,6 +29,7 @@ dgev<-function(x,loc,scale,sh)
 
 #' @name Generalised Extreme Values distribution 
 #' @family gev distribution
+#' @export
 pgev<-function(q,loc,scale,sh, lower.tail=TRUE){
   # Cummulative distribution function
   if(sh> -1e-07 & sh< 1e-07) {pgev<-exp(-exp(-(q-loc)/scale))}
@@ -39,6 +40,7 @@ pgev<-function(q,loc,scale,sh, lower.tail=TRUE){
 
 #' @name Generalised Extreme Values distribution 
 #' @family gev distribution
+#' @export
 qgev<-function(p,loc,scale,sh, lower.tail=TRUE){
   # Quantile function
   if(!lower.tail) p <- 1-p
@@ -51,6 +53,7 @@ qgev<-function(p,loc,scale,sh, lower.tail=TRUE){
 
 #' @name Generalised Extreme Values distribution 
 #' @family gev distribution
+#' @export
 rgev<-function(n,loc,scale,sh){
   # generate n random variates
   u<-runif(n)
@@ -58,6 +61,10 @@ rgev<-function(n,loc,scale,sh){
   else {rgev<-loc+(scale/sh)*(1-(-log(u))^sh)}
   rgev
 }
+
+
+
+
 
 
 
@@ -71,25 +78,27 @@ rgev<-function(n,loc,scale,sh){
 #' @param x,q vector of quantiles
 #' @param p vector of probabilities
 #' @param lower.tail logical; if \code{TRUE} (default), probabilities are \eqn{P[X \leq x]} otherwise, \eqn{P[X > x]}
-#' @keywords Generalised Logistic distibution
-#' @aliases pglo dglo rglo qglo
 #' @return These function mimic the standard output of distributions in R see \code{?pnorm}.  
-#' @name Generalised Logistic distribution 
+#' @export
+#' @name Generalised Logistic distibution
 #' @family glo distribution
-#' @examples plot(seq(-15,40,by=0.2),dglo(seq(-15,40,by=0.2),4,6,0.2),type="l")
-#' plot(ecdf(rglo(100,4,6,0.2)))
-#' lines(seq(-15,40,by=0.5),pglo(seq(-15,40,by=0.5),4,6,0.2),col=2)
-#' qglo(c(0.5,0.99,0.995,0.995,0.999),4,6,0.2) # the 1-in-2years, 1-in-100years, 1-in-200years, 1-in-1000years events
-#' 
+#' @examples 
+#' plot(seq(-26,80,by=0.2),dglo(seq(-26,80,by=0.2),4,6,-0.2),type="l")
+#' plot(ecdf(rglo(100,4,6,-0.2)))
+#' lines(seq(-26,80,by=0.2),pglo(seq(-26,80,by=0.2),4,6,-0.2),col=2)
+#' qglo(c(0.5,0.99,0.995,0.995,0.999),4,6,-0.2) # the 1-in-2years, 1-in-100years, 1-in-200years, 1-in-1000years events
 dglo<-function(x, loc, scale, sh){
   # Denisty function f(x)
-  if(sh> -1e-07 & sh< 1e-07) {tx<-(x-loc)/scale}
-  else{tx<-(-1/sh)*log(1-sh*(x-loc)/scale)}
-  dgev<-(1/scale)*exp(-(1-sh)*tx)/((1+exp(-tx))^2)
-  dgev
+  if(sh> -1e-07 & sh< 1e-07) {tx <- (x-loc)/scale}
+  else{tx <- (-1/sh)*log(1-sh*(x-loc)/scale)}
+  dglo <- (1/scale)*exp(-(1-sh)*tx)/((1+exp(-tx))^2)
+  dglo
 }
 
 
+#' @name Generalised Logistic distibution
+#' @family glo distribution
+#' @export
 pglo<-function(q, loc, scale, sh, lower.tail=TRUE){
   # Cummulative distribution function F(q)
   if(sh> -1e-07 & sh< 1e-07) {tx<-(x-loc)/scale}
@@ -99,6 +108,11 @@ pglo<-function(q, loc, scale, sh, lower.tail=TRUE){
   pglo
 }
 
+
+
+#' @name Generalised Logistic distibution
+#' @family glo distribution
+#' @export
 qglo<-function (p, loc, scale, sh, lower.tail=TRUE){
   ## quantile function F^(-1) (p)
   if(!lower.tail) p <- 1-p
@@ -106,6 +120,11 @@ qglo<-function (p, loc, scale, sh, lower.tail=TRUE){
   else loc + (scale * (1-((1 - p)/p)^(sh)))/sh
 }
 
+
+
+#' @name Generalised Logistic distibution
+#' @family glo distribution
+#' @export
 rglo<-function(n, loc, scale, sh){
   # generate n random variates
   u<-runif(n)
@@ -114,5 +133,4 @@ rglo<-function(n, loc, scale, sh){
 }
 
 
-# library(devtools);library(roxygen2)
-# document("ilaprosUtils/");install("ilaprosUtils/");library(ilaprosUtils)
+

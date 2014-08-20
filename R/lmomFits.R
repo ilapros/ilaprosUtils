@@ -1,10 +1,39 @@
+# 
+# 
+# load_all("../ilaprosUtils/"); document("../ilaprosUtils");
+# build("../ilaprosUtils");install("../ilaprosUtils");library(ilaprosUtils)
+# ?PPmatG
 
-PPmatG<-function(mat,cols=NULL,fit.lines="gev",ff=seq(0.005,0.995,by=0.0025),yll=NULL,timeGrid=TRUE,...){
+
+
+#' @title Plotting positions of a matrix of data
+#' @description This can be useful when building DDF models. 
+#' It takes each columns of a matrix and plots them as Gringorten plotting positions. 
+#' The x-axis is shown using the Gumbel variate \code{-log(-log(f))}, with f the non exceedance probability
+#' If a distribution is given to fit.lines, it adds an estimated return level curve based on L-moments estimate
+#' @param mat matrix of data
+#' @param cols colour in which the data points of each column (and estimated line) should be dislayed
+#' @param fit.lines a character string indicating the distribution to be used to draw the fitted line. 
+#' Current options are "gev" (default), "glo", "gamma" and "none" which results in no lines
+#' @param ff the non-exceedance probabilities for which the lines are estimated. 
+#' It also affects the width of the x-axis. Defaul is \code{seq(0.005,0.995,by=0.0025)}.
+#' @param yll ylimits (optional)
+#' @param timeGrid logical. Should a time grid with years corrsponding to key non-excedances be dispalyed.
+#' @return A plot with the plotting positions of each column and a matrix of the estimated parameters  
+#' @examples
+#' x <- matrix(c(rgev(20, 10, 3,   -0.2), 
+#'               rgev(20, 15, 4.5, -0.2), 
+#'               rgev(20, 40, 6.5, -0.2)),byrow = FALSE, ncol=3)
+#' library(lmom)
+#' PPmatG(x, cols = c(4,5,2), fit.lines = "gev")
+#' @export
+PPmatG <- function(mat,cols=NULL,fit.lines="gev",ff=seq(0.005,0.995,by=0.0025),yll=NULL,timeGrid=TRUE,...){
   if(is.null(cols) | length(cols)<ncol(mat)) cols<-seq(1,ncol(mat))
   if(is.null(yll)) yll<-c(0,1.2*max(mat[,1:ncol(mat)],na.rm=TRUE))
   prevPlot<-FALSE
   mat.pars<-matrix(NA,ncol=switch(fit.lines,
                                     "gev"=3,
+                                    "glo"=3,
                                     "gamma"=2,
                                     "none"=4),nrow=ncol(mat))
   plot(range(-log(-log(ff))),yll,xlab=" ",ylab=" ",type="n",bty="l",...)  
@@ -14,7 +43,6 @@ PPmatG<-function(mat,cols=NULL,fit.lines="gev",ff=seq(0.005,0.995,by=0.0025),yll
     if(!all(is.na(x))) {
         axis(1)
         femp<-(1:length(x)-0.44)/(length(x) + 1 - 0.88)
-#         print(femp)
         points(-log(-log(femp)),sort(x),col=cols[j],...)
         if(length(x)>3){
           lines(-log(-log(ff)),switch(fit.lines,
@@ -39,8 +67,29 @@ PPmatG<-function(mat,cols=NULL,fit.lines="gev",ff=seq(0.005,0.995,by=0.0025),yll
 
 
 
-
-PPlinesG<-function(cols=NULL,fit.lines="gev",ff=seq(0.005,0.995,by=0.0025),pars=NULL,...){
+#' @title Add return level curves based on a set of (estimated) parameters.
+#' @description This can be useful in combination with PPmatG. 
+#' The x-axis is shown using the Gumbel variate \code{-log(-log(f))}, with f the non exceedance probability. 
+#' If a distribution is given to fit.lines, it adds an estimated return level curve based on L-moments estimate.
+#' @param pars matrix of parameter estimates. 
+#' Each column should correspond to a parameter, each line to an observation (station).
+#' @param cols colour in which the lines points of each row should be dislayed
+#' @param fit.lines a character string indicating the distribution to be used to draw the fitted line. 
+#' Current options are "gev" (default), "glo", "gamma"
+#' @param ff the non-exceedance probabilities for which the lines are estimated
+#' It also affects the width of the x-axis. Defaul is \code{seq(0.005,0.995,by=0.0025)}
+#' @param ... additional graphical parameters
+#' @return A set of estimated return curves added to the current plot
+#' @examples
+#' x <- matrix(c(rgev(20, 10, 3,   -0.2), 
+#'               rgev(20, 15, 4.5, -0.2), 
+#'               rgev(20, 40, 6.5, -0.2)), byrow = FALSE, ncol=3)
+#' library(lmom)
+#' PPmatG(x, cols = c(4,5,2), fit.lines = "gev")
+#' pars <- t(apply(x,2,function(x) pelglo(samlmu(x))))
+#' PPlinesG(pars = pars, cols= c(4,5,2), lty=2)
+#' @export
+PPlinesG<-function(pars=NULL, cols=NULL, fit.lines="gev", ff=seq(0.005,0.995,by=0.0025), ...){
   if(is.null(cols) | length(cols)<nrow(pars)) cols<-seq(1,ncol(pars))
   for(j in 1:nrow(pars)){
       lines(-log(-log(ff)),switch(fit.lines,
@@ -48,42 +97,5 @@ PPlinesG<-function(cols=NULL,fit.lines="gev",ff=seq(0.005,0.995,by=0.0025),pars=
             "gamma"=quagam(ff,as.numeric(pars[j,])),
             "glo"=quaglo(ff,as.numeric(pars[j,]))),col=cols[j], ...)
   }
-}
-
-
-
-
-
-ll<-seq(0.005,0.995,by=0.0025)
-retP<-c(1.2,1.5,2,3.5,5,10,20,50,100,200)
-
-## GB and NI
-ukcoast<-read.table("P:\\HRRD\\NEC05031 EA Small Catchments Phase 2\\analysis\\ukcoast.txt",header=TRUE)
-ukcoast<-ukcoast/1000
-
-gbcoast <- read.table("P:\\HRRD\\NEC05031 EA Small Catchments Phase 2\\analysis\\gbcoast.txt",header=TRUE)
-
-
-par.set.size <- function(x, y){
-  limits <- c(range(x), range(y))
-  foo.l <<- limits
-  fin <- par()$fin
-  #scale the plots to maximum size but with x and y scales equal
-  xrange <- limits[2] - limits[1]
-  yrange <- limits[4] - limits[3]
-  xscale <- xrange/(fin[1] - par()$mai[2] - par()$mai[4])
-  yscale <- yrange/(fin[2] - par()$mai[1] - par()$mai[3])
-  samescale <- max(xscale, yscale)
-  par(pin = (1/samescale) * c(xrange, yrange), usr = limits,mai=c(.60000,0.75,.4,0.560000))
-  invisible()
-}
-
-do.uk<-function(mycol=1,xlim=c(0,670),ylim=c(0,1050)){
-  par.set.size(xlim,ylim)
-  plot(xlim, ylim, type = "n", 
-       xlab = "Easting (km)", ylab = "Northing (km)",
-       mgp=c(1.7,.6,0), axes = T, bty="l")
-  #          mgp= c(0.8, 0.2, 0), axes = T)
-  lines(ukcoast$east, ukcoast$north, lwd = 0.1, col = mycol)
 }
 
