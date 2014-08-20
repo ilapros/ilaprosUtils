@@ -9,8 +9,8 @@ Description: Some functions I use to handle the flow/rainfall data I get. And
 Depends:
     R (>= 3.1.0)
 Imports:
-	lmom,
-	ismev
+    lmom,
+    ismev
 License: GPL3.0
-LazyData: true
+LazyData: false
 Roxygen: list(wrap = FALSE)
