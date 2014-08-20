@@ -6,7 +6,7 @@
 \method{print}{gev.fit}(fitobj)
 }
 \arguments{
-\item{fitobj}{a fitted object of the class GEV}
+\item{fitobj}{a fitted object of the class gev.fit}
 }
 \description{
 This function prints the MLE, se, convergence info and negative log-likelihood value.

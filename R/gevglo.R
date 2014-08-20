@@ -75,7 +75,6 @@ rgev<-function(n,loc,scale,sh){
 #' @aliases pglo dglo rglo qglo
 #' @return These function mimic the standard output of distributions in R see \code{?pnorm}.  
 #' @name Generalised Logistic distribution 
-#' @export 
 #' @family glo distribution
 #' @examples plot(seq(-15,40,by=0.2),dglo(seq(-15,40,by=0.2),4,6,0.2),type="l")
 #' plot(ecdf(rglo(100,4,6,0.2)))
@@ -89,6 +88,7 @@ dglo<-function(x, loc, scale, sh){
   dgev<-(1/scale)*exp(-(1-sh)*tx)/((1+exp(-tx))^2)
   dgev
 }
+
 
 pglo<-function(q, loc, scale, sh, lower.tail=TRUE){
   # Cummulative distribution function F(q)
@@ -114,3 +114,5 @@ rglo<-function(n, loc, scale, sh){
 }
 
 
+# library(devtools);library(roxygen2)
+# document("ilaprosUtils/");install("ilaprosUtils/");library(ilaprosUtils)
