@@ -7,7 +7,7 @@
 #' @examples
 #' library(ismev)
 #' print(gev.fit(c(50,45,65,78,12,23),show=FALSE))
-
+#' @export
 print.gev.fit<-function(fitobj){
   zz<-list(mle=fitobj$mle,se=fitobj$se,conv=fitobj$conv,nllh=fitobj$nllh)
   print(zz)
@@ -21,6 +21,7 @@ print.gev.fit<-function(fitobj){
 #' @examples
 #' library(ismev)
 #' print(glo.fit(c(50,45,65,78,12,23),show=FALSE))
+#' @export
 print.glo.fit<-function(fitobj){
   zz<-list(mle=fitobj$mle,se=fitobj$se,conv=fitobj$conv,nllh=fitobj$nllh)
   print(zz)

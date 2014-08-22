@@ -91,7 +91,6 @@ turnpoints<-function (x) {
 #' Therefore \code{vecTIme} needs to be equally spaced, 
 #' e.g. if missing values are present in the orignal file they should be infilled. 
 #' @return a list of 0-1 values which indicate whether the \code{vecObs}value is a peak 
-#' @export
 #' @examples 
 #' zz <- data.frame(hour=seq(1, 240),
 #'                  flow=sample(c(rnorm(200, 50, 5),rgev(40, 70,3,0.2))))
@@ -101,6 +100,7 @@ turnpoints<-function (x) {
 #' ## more hours needed to be assumed independent
 #' zz$isPeak <- extractPeaks(vecTime=zz$hour,vecObs=zz$flow,mintimeDiff=8)
 #' points(zz$hour[zz$isPeak==1], zz$flow[zz$isPeak==1], col=4)
+#' @export
 extractPeaks<-function(vecTime = NULL, vecObs, mintimeDiff=73, thrConst=(2/3)){ 
   #### selects peaks at least mintimeDiff apart
   ##  relies on turnpoints from pastecs
