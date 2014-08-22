@@ -75,7 +75,7 @@ turnpoints<-function (x) {
 
 
 #' @title Extracting peaks
-#' @description Density, distribution function, quantile function and random generation for the Generalised Extreme Values distribution with location parameter equal to \code{loc}, scale paraemter equale to \code{scale} and shape parameter equal to \code{shape}
+#' @description Extracts independent peaks
 #' @param vecTime an optional numeric vector containing information on the time variable. 
 #' The vector is used to order the vecObs variable, so it should be provided if the data are not in chronological order
 #' If \code{vecTime = NULL} (the default) it is assumed that the data are correctly ordered. 

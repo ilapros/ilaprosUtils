@@ -20,7 +20,7 @@ If \code{vecTime = NULL} (the default) it is assumed that the data are correctly
 a list of 0-1 values which indicate whether the \code{vecObs}value is a peak
 }
 \description{
-Density, distribution function, quantile function and random generation for the Generalised Extreme Values distribution with location parameter equal to \code{loc}, scale paraemter equale to \code{scale} and shape parameter equal to \code{shape}
+Extracts independent peaks
 }
 \details{
 This functions has been (sort of) tested in extracting peaks from 15 minutes data.
