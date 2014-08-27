@@ -52,10 +52,10 @@ print.pp.fit<-function(obj){
 #' @description This function fits the GLo distribution. It's built mirroring the \code{gev.fit} function of \code{ismev}
 #' @param xdat the object to be fitted
 #' @keywords glo.fit
-#' @examples
 #' @export
-#' library(ismev)
-#' print(glo.fit(c(50,45,65,78,12,23),show=FALSE))
+#' @examples
+#' set.seed(5846)
+#' print(glo.fit(rglo(n = 80, 50, 6, -0.2), show=FALSE))
 glo.fit<-function(xdat, ydat = NULL, mul = NULL, sigl = NULL, shl = NULL, mulink = identity, siglink = identity, shlink = identity, muinit = NULL, siginit = NULL, shinit = NULL, show = TRUE, method = "Nelder-Mead", maxit = 10000, ...){
     #
     # obtains mles etc for glo distn

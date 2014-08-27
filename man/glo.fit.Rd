@@ -15,8 +15,8 @@ glo.fit(xdat, ydat = NULL, mul = NULL, sigl = NULL, shl = NULL,
 This function fits the GLo distribution. It's built mirroring the \code{gev.fit} function of \code{ismev}
 }
 \examples{
-library(ismev)
-print(glo.fit(c(50,45,65,78,12,23),show=FALSE))
+set.seed(5846)
+print(glo.fit(rglo(n = 80, 50, 6, -0.2),show=FALSE))
 }
 \keyword{glo.fit}
 
