@@ -7,7 +7,7 @@ PPmatG(mat, cols = NULL, fit.lines = "gev", ff = seq(0.005, 0.995, by =
   0.0025), yll = NULL, timeGrid = TRUE, ...)
 }
 \arguments{
-\item{mat}{matrix of data}
+\item{mat}{data matrix, each column will be analaysed seperately}
 
 \item{cols}{colour in which the data points of each column (and estimated line) should be dislayed}
 
@@ -25,7 +25,7 @@ It also affects the width of the x-axis. Defaul is \code{seq(0.005,0.995,by=0.00
 A plot with the plotting positions of each column and a matrix of the estimated parameters
 }
 \description{
-This can be useful when building DDF models.
+This can be useful when building DDF models or when comparing seasonal maxima of the same record.
 It takes each columns of a matrix and plots them as Gringorten plotting positions.
 The x-axis is shown using the Gumbel variate \code{-log(-log(f))}, with f the non exceedance probability
 If a distribution is given to fit.lines, it adds an estimated return level curve based on L-moments estimate

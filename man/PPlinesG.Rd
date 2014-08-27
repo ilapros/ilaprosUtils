@@ -3,10 +3,12 @@
 \alias{PPlinesG}
 \title{Add return level curves based on a set of (estimated) parameters.}
 \usage{
-PPlinesG(pars = NULL, cols = NULL, fit.lines = "gev", ff = seq(0.005,
-  0.995, by = 0.0025), ...)
+PPlinesG(mat = NULL, pars = NULL, cols = NULL, fit.lines = "gev",
+  ff = seq(0.005, 0.995, by = 0.0025), ...)
 }
 \arguments{
+\item{mat}{data matrix, each column will be analaysed seperately.}
+
 \item{pars}{matrix of parameter estimates.
 Each column should correspond to a parameter, each line to an observation (station).}
 
@@ -36,5 +38,6 @@ library(lmom)
 PPmatG(x, cols = c(4,5,2), fit.lines = "gev")
 pars <- t(apply(x,2,function(x) pelglo(samlmu(x))))
 PPlinesG(pars = pars, cols= c(4,5,2), lty=2)
+PPlinesG(mat  = x, cols= c(4,5,2), lty=3, fit.lines = "gamma")
 }
 
