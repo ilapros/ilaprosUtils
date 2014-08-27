@@ -7,11 +7,11 @@
 
 
 #' @title Plotting positions of a matrix of data
-#' @description This can be useful when building DDF models. 
+#' @description This can be useful when building DDF models or when comparing seasonal maxima of the same record. 
 #' It takes each columns of a matrix and plots them as Gringorten plotting positions. 
 #' The x-axis is shown using the Gumbel variate \code{-log(-log(f))}, with f the non exceedance probability
 #' If a distribution is given to fit.lines, it adds an estimated return level curve based on L-moments estimate
-#' @param mat matrix of data
+#' @param mat data matrix, each column will be analaysed seperately
 #' @param cols colour in which the data points of each column (and estimated line) should be dislayed
 #' @param fit.lines a character string indicating the distribution to be used to draw the fitted line. 
 #' Current options are "gev" (default), "glo", "gamma" and "none" which results in no lines
@@ -71,6 +71,7 @@ PPmatG <- function(mat,cols=NULL,fit.lines="gev",ff=seq(0.005,0.995,by=0.0025),y
 #' @description This can be useful in combination with PPmatG. 
 #' The x-axis is shown using the Gumbel variate \code{-log(-log(f))}, with f the non exceedance probability. 
 #' If a distribution is given to fit.lines, it adds an estimated return level curve based on L-moments estimate.
+#' @param mat data matrix, each column will be analaysed seperately.
 #' @param pars matrix of parameter estimates. 
 #' Each column should correspond to a parameter, each line to an observation (station).
 #' @param cols colour in which the lines points of each row should be dislayed
@@ -88,14 +89,24 @@ PPmatG <- function(mat,cols=NULL,fit.lines="gev",ff=seq(0.005,0.995,by=0.0025),y
 #' PPmatG(x, cols = c(4,5,2), fit.lines = "gev")
 #' pars <- t(apply(x,2,function(x) pelglo(samlmu(x))))
 #' PPlinesG(pars = pars, cols= c(4,5,2), lty=2)
+#' PPlinesG(mat  = x, cols= c(4,5,2), lty=3, fit.lines = "gamma")
 #' @export
-PPlinesG<-function(pars=NULL, cols=NULL, fit.lines="gev", ff=seq(0.005,0.995,by=0.0025), ...){
-  if(is.null(cols) | length(cols)<nrow(pars)) cols<-seq(1,ncol(pars))
-  for(j in 1:nrow(pars)){
-      lines(-log(-log(ff)),switch(fit.lines,
-            "gev"=quagev(ff,as.numeric(pars[j,])),
-            "gamma"=quagam(ff,as.numeric(pars[j,])),
-            "glo"=quaglo(ff,as.numeric(pars[j,]))),col=cols[j], ...)
+PPlinesG <- function(mat = NULL, pars = NULL, cols = NULL, fit.lines = "gev", ff = seq(0.005, 0.995, by = 0.0025), ...) {
+  if(is.null(pars) & is.null(mat)) stop("Either a parameter or data matrix needed")
+  if(!is.null(mat)) pars <- t(switch(fit.lines,gev = apply(mat, 2, function(x) pelgev(samlmu(x))), 
+                                  gamma = apply(mat, 2, function(x) pelgam(samlmu(x))), 
+                                  glo = apply(mat, 2, function(x) pelglo(samlmu(x)))))
+  if (is.null(cols) | length(cols) < nrow(pars)) 
+    cols <- seq(1, ncol(pars))
+  for (j in 1:nrow(pars)) {
+    lines(-log(-log(ff)), switch(fit.lines, 
+                                 gev = quagev(ff, as.numeric(pars[j, ])), 
+                                 gamma = quagam(ff, as.numeric(pars[j, ])), 
+                                 glo = quaglo(ff, as.numeric(pars[j, ]))), col = cols[j], ...)
   }
+  invisible(pars)
 }
+
+
+
 
