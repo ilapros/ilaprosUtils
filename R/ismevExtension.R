@@ -39,6 +39,7 @@ print.glo.fit<-function(fitobj){
 #' data(rain)
 #' a <- pp.fit(rain, 10)
 #' a
+#' @export
 print.pp.fit<-function(obj){
   res<-list(mle=obj$mle,se=obj$se,nllh=obj$nllh)
   print(res)
@@ -52,6 +53,7 @@ print.pp.fit<-function(obj){
 #' @param xdat the object to be fitted
 #' @keywords glo.fit
 #' @examples
+#' @export
 #' library(ismev)
 #' print(glo.fit(c(50,45,65,78,12,23),show=FALSE))
 glo.fit<-function(xdat, ydat = NULL, mul = NULL, sigl = NULL, shl = NULL, mulink = identity, siglink = identity, shlink = identity, muinit = NULL, siginit = NULL, shinit = NULL, show = TRUE, method = "Nelder-Mead", maxit = 10000, ...){
