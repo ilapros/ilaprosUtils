@@ -16,7 +16,7 @@ This function fits the GLo distribution. It's built mirroring the \code{gev.fit}
 }
 \examples{
 set.seed(5846)
-print(glo.fit(rglo(n = 80, 50, 6, -0.2),show=FALSE))
+print(glo.fit(rglo(n = 80, 50, 6, -0.2), show=FALSE))
 }
 \keyword{glo.fit}
 
