@@ -1,9 +1,11 @@
 ---
-title: "Use of ilaprosUtils"
-author: "Ilaria Prosdocimi"
-date: "Monday, August 25, 2014"
-output: html_document
+output:
+  html_document:
+    keep_md: yes
 ---
+# Use of ilaprosUtils
+*Ilaria Prosdocimi*  (ilapro@ceh.ac.uk)
+
 
 This document aims at showing the use of some of the functions contained in the `ilaprosUtils` package. I will use the data obtained via the package `rnrfa`, which retrieves data from the National River Flow Archive. Indeed, `ilaprosUtils` is mostly a combination of functions I developed (and continue to develop) in my years at the Centre for Ecology and Hydrology and can be useful when working with hydrological data, in particular high end extremes. 
 
@@ -19,8 +21,8 @@ suppressPackageStartupMessages(library(zoo))
 
 ```{r, message = FALSE}
 suppressPackageStartupMessages(library(devtools))
-suppressPackageStartupMessages(library(rnrfa))
-install_github("ilapros/ilaprosUtils")
+library(rnrfa)
+# install_github("ilapros/ilaprosUtils")
 library(ilaprosUtils)
 library(lmom)
 library(ismev)
@@ -58,7 +60,7 @@ lines(st72014$Date[st72014$Summer == 1], st72014$Flow[st72014$Summer == 1], col 
 ```
 
 
-Years in which less than 80% of the flow data are recorded are to be considered incomplete.  If the interest lies in some extremal part of the distribution, one should be careful when keeping records with missing data in the dataset: it could be that we do not record the part of the flow which are actually of interest to the analysis. 
+Years in which less than 80% of the flow data are recorded are to be considered incomplete. If the interest lies in some extremal part of the distribution, one should be careful when keeping records with missing data in the dataset: it could be that we do not record the part of the flow which are actually of interest to the analysis. 
 ```{r}
 ### delete Water Years for which less than 80% of the data is present (~292 days complete)
 ### crude way to be sure we are not missing some important events
