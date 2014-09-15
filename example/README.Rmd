@@ -5,27 +5,29 @@ date: "Monday, August 25, 2014"
 output: html_document
 ---
 
-This document aims at showing the use of some of the functions contained in the `ilaprosUtils` package. I will use the data obtained via the package `rnrfa`, which retrives data from the National River Flow Archive. Indeed, `ilaprosUtils` is mostly a combination of functions I developed (and continue to develop) in my years at the Centre for Ecology and Hydrology and can be useful when working with hydrological data, in particular high end extremes. 
+This document aims at showing the use of some of the functions contained in the `ilaprosUtils` package. I will use the data obtained via the package `rnrfa`, which retrieves data from the National River Flow Archive. Indeed, `ilaprosUtils` is mostly a combination of functions I developed (and continue to develop) in my years at the Centre for Ecology and Hydrology and can be useful when working with hydrological data, in particular high end extremes. 
 
 This document shows how to use some functions in the `ilaprosUtils` package to perform an analysis on the annual and seasonal maxima of a daily river flow as gauged at one of the stations of the National River Flow Archive. 
 
 First a number of libraries are needed for everything to work:
 
-```{r, echo = FALSE}
-library(zoo)
+```{r}
+suppressPackageStartupMessages(library(zoo))
+## this actually only needs to be installed 
+## only needed to extract the index later on
 ```
 
 ```{r, message = FALSE}
 suppressPackageStartupMessages(library(devtools))
 suppressPackageStartupMessages(library(rnrfa))
-# install_github("ilapros/ilaprosUtils")
+install_github("ilapros/ilaprosUtils")
 library(ilaprosUtils)
 library(lmom)
 library(ismev)
 ```
 
 We download via `rnrfa` average daily flow data for the Conder at Galgate, as measured at station 72014. The result is a pretty complex object, we are only interested in the daily river flow stored in `wmlTS`:
-```{r, cache=TRUE}
+```{r}
 st72014 <- SearchNRFA(72014)
 str(st72014)
 st72014 <- st72014[["wmlTS"]]
@@ -34,7 +36,7 @@ head(st72014)
 
 We simplify the structure of the data and just keep the date and flow value recorded at each day
 
-```{r, cache=TRUE}
+```{r}
 class(st72014)
 st72014 <- data.frame(Date = zoo::index(st72014), Flow = as.numeric(st72014))
 plot(st72014,type="l")
@@ -42,9 +44,9 @@ plot(st72014,type="l")
 
 We see that some values are missing, in particular, for some yers there seem to be no record at all. 
 
-The water year in the UK is commonly taken to start in October. Sumemr is taken to be th eperiod running between March and October. We identify the Water year with the `date2wy` function and the summer month with the `date2summer` function. 
+The water year in the UK is commonly taken to start in October. Summer is taken to be the period running between March and October. We identify the Water year with the `date2wy` function and the summer month with the `date2summer` function. 
 
-```{r, cache=TRUE}
+```{r}
 st72014$WaterYear <- date2wy(st72014$Date)
 ## prints the month of the first and last day of each WaterYear
 head(tapply(st72014$Date, factor(st72014$WaterYear), function(x) date2month(x[c(1,length(x))])))
@@ -56,17 +58,17 @@ lines(st72014$Date[st72014$Summer == 1], st72014$Flow[st72014$Summer == 1], col 
 ```
 
 
-Years in which less than 80% of the flow data are recorded are to be considered incomplete.  If the interest lies in some extremal part of the distribution, one should be careful when keeping records with missing data in the datast: it could be that we do not record the part of the flow which are actually of interest to the analysis. 
-```{r, cache=TRUE}
+Years in which less than 80% of the flow data are recorded are to be considered incomplete.  If the interest lies in some extremal part of the distribution, one should be careful when keeping records with missing data in the dataset: it could be that we do not record the part of the flow which are actually of interest to the analysis. 
+```{r}
 ### delete Water Years for which less than 80% of the data is present (~292 days complete)
 ### crude way to be sure we are not missing some important events
 tapply(st72014$Flow, factor(st72014$WaterYear), length)
 st72014 <- st72014[!st72014$WaterYear %in% c(1975,1977,1988,1989), ]
 ```
 
-To extract the annual maxima, we use the `inst2daily` function, which needs as input a matrix fo data, and the information of which column stores the variable of intereset (`indVec`) and which column stores the (factor) variable whcih should be used to divide the data (`indFac`):
+To extract the annual maxima, we use the `inst2daily` function, which needs as input a matrix of data, and the information of which column stores the variable of interest (`indVec`) and which column stores the (factor) variable which should be used to divide the data (`indFac`):
 
-```{r, cache=TRUE}
+```{r}
 names(st72014)
 anMax <- inst2daily(zz = st72014, indFac = 3, indVec = 2)
 ## annual maxima of Flow (2nd column) extracted for each WaterYear (3rd column)
@@ -81,7 +83,7 @@ Note that the output of `inst2daily` is a matrix with the same columns of the or
 We now have a dataset with all annual maxima recorded at the station. We can easily extract the seasonal maxima as well and display them in a plot. 
 
 
-```{r, cache=TRUE}
+```{r}
 #### extract seasonal maxima
 winMax <- inst2daily(zz = st72014[st72014$Summer != 1,], indFac = 3, indVec = 2)
 sumMax <- inst2daily(zz = st72014[st72014$Summer == 1,], indFac = 3, indVec = 2)
@@ -94,7 +96,7 @@ points(sumMax$Date, sumMax$Flow, pch=4, col=2)
 ### the outputs of inst2daily are ordered, no need to merge
 allMax <- cbind(anMax$Flow, winMax$Flow, sumMax$Flow)
 ```
-Different methods are used to fit a distribution to the data. The maximum likelihood and the L-moment approaches are proabaly the most frequently used ones. We use the `ismev` package to estimate the distribution parameters via maximum likelihood, and the `lmom`  package for L-moments. Other useful packages are `evd` or `nsRFA`, which could be also used to obtain Maximum likelihood or L-moment estimates of the parameters of a distribution.
+Different methods are used to fit a distribution to the data. The maximum likelihood and the L-moment approaches are probably the most frequently used ones. We use the `ismev` package to estimate the distribution parameters via maximum likelihood, and the `lmom`  package for L-moments. Other useful packages are `evd` or `nsRFA`, which could be also used to obtain Maximum likelihood or L-moment estimates of the parameters of a distribution.
 
 
 
