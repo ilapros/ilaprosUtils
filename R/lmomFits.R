@@ -14,7 +14,7 @@
 #' @param mat data matrix, each column will be analaysed seperately
 #' @param cols colour in which the data points of each column (and estimated line) should be dislayed
 #' @param fit.lines a character string indicating the distribution to be used to draw the fitted line. 
-#' Current options are "gev" (default), "glo", "gamma" and "none" which results in no lines
+#' Current options are "gev" (default), "glo", "gamma", "gpa" and "none" which results in no lines
 #' @param ff the non-exceedance probabilities for which the lines are estimated. 
 #' It also affects the width of the x-axis. Defaul is \code{seq(0.005,0.995,by=0.0025)}.
 #' @param yll ylimits (optional)
@@ -34,6 +34,7 @@ PPmatG <- function(mat,cols=NULL,fit.lines="gev",ff=seq(0.005,0.995,by=0.0025),y
   mat.pars<-matrix(NA,ncol=switch(fit.lines,
                                     "gev"=3,
                                     "glo"=3,
+                                    "gpa"=3,
                                     "gamma"=2,
                                     "none"=4),nrow=ncol(mat))
   plot(range(-log(-log(ff))),yll,xlab=" ",ylab=" ",type="n",bty="l",...)  
@@ -48,12 +49,14 @@ PPmatG <- function(mat,cols=NULL,fit.lines="gev",ff=seq(0.005,0.995,by=0.0025),y
           lines(-log(-log(ff)),switch(fit.lines,
                 "gev"=quagev(ff,pelgev(samlmu(x))),
                 "gamma"=quagam(ff,pelgam(samlmu(x))),
+                "gpa"=quagpa(samlmu(x)),
                 "glo"=quaglo(ff,pelglo(samlmu(x))),
                 "none"=rep(-500,l=length(ff))),col=cols[j])
           mat.pars[j,]<-switch(fit.lines,
                   "gev"=pelgev(samlmu(x)),
                   "gamma"=pelgam(samlmu(x)),
                   "glo"=pelglo(samlmu(x)),
+                  "gpa"=pelgpa(samlmu(x)),
                   "none"=samlmu(x))
         }
     }    
@@ -76,7 +79,7 @@ PPmatG <- function(mat,cols=NULL,fit.lines="gev",ff=seq(0.005,0.995,by=0.0025),y
 #' Each column should correspond to a parameter, each line to an observation (station).
 #' @param cols colour in which the lines points of each row should be dislayed
 #' @param fit.lines a character string indicating the distribution to be used to draw the fitted line. 
-#' Current options are "gev" (default), "glo", "gamma"
+#' Current options are "gev" (default), "glo", "gpa", "gamma"
 #' @param ff the non-exceedance probabilities for which the lines are estimated
 #' It also affects the width of the x-axis. Defaul is \code{seq(0.005,0.995,by=0.0025)}
 #' @param ... additional graphical parameters
@@ -95,14 +98,16 @@ PPlinesG <- function(mat = NULL, pars = NULL, cols = NULL, fit.lines = "gev", ff
   if(is.null(pars) & is.null(mat)) stop("Either a parameter or data matrix needed")
   if(!is.null(mat)) pars <- t(switch(fit.lines,gev = apply(mat, 2, function(x) pelgev(samlmu(x))), 
                                   gamma = apply(mat, 2, function(x) pelgam(samlmu(x))), 
-                                  glo = apply(mat, 2, function(x) pelglo(samlmu(x)))))
+                                  glo = apply(mat, 2, function(x) pelglo(samlmu(x))), 
+                                  gpa = apply(mat, 2, function(x) pelgpa(samlmu(x)))))
   if (is.null(cols) | length(cols) < nrow(pars)) 
     cols <- seq(1, ncol(pars))
   for (j in 1:nrow(pars)) {
     lines(-log(-log(ff)), switch(fit.lines, 
                                  gev = quagev(ff, as.numeric(pars[j, ])), 
                                  gamma = quagam(ff, as.numeric(pars[j, ])), 
-                                 glo = quaglo(ff, as.numeric(pars[j, ]))), col = cols[j], ...)
+                                 glo = quaglo(ff, as.numeric(pars[j, ])),
+                                 gpa = quagpa(ff, as.numeric(pars[j, ]))), col = cols[j], ...)
   }
   invisible(pars)
 }
