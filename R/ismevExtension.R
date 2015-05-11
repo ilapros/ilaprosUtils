@@ -108,6 +108,7 @@ glo.fit<-function(xdat, ydat = NULL, mul = NULL, sigl = NULL, shl = NULL, mulink
       y <- ((1-xi*(xdat - mu)/sc))
       if(any(!y>0) || any(sc <= 0)) return(10^6)
       y<- -log(y)/xi
+      if(any(abs(xi) <10^-5)) {y <- (xdat - mu[1])/sc[1]; y0<- (X0 - mu[1])/sc[1]}
       (sum(log(sc)) + sum(y*(1-xi)) + 2*sum(log(1+exp(-y) )))
     }
     x <- optim(init, glo.lik, hessian = TRUE, method = method,
