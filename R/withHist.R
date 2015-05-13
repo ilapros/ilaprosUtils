@@ -26,8 +26,8 @@
 #' set.seed(7821567)
 #' xx <- rglo(500, 40, 6, -0.2)
 #' xxsist <- xx[471:500]; xxhist <- xx[1:470][xx[1:470] > 80]
-#' glo.hist.fit(c(xxhist,xxsist), k = 3, h = 470, X0 = 80)
-#' glo.hist.fit(c(xxhist,xxsist), k = 3, h = 470, X0 = 80, binomialcens = TRUE)
+#' glo.hist.fit(c(xxhist,xxsist), k = length(xxhist), h = 470, X0 = 80)
+#' glo.hist.fit(c(xxhist,xxsist), k = length(xxhist), h = 470, X0 = 80, binomialcens = TRUE)
 #' glo.fit(xxsist) ## notice the higher standard errors
 glo.hist.fit<-
   function(xdat,k=0,h=NULL,X0=NULL,binomialcens=FALSE,ydat = NULL, 
@@ -158,8 +158,8 @@ glo.hist.fit<-
 #' set.seed(5416574)
 #' xx <- rgev(500, 40, 6, -0.2)
 #' xxsist <- xx[471:500]; xxhist <- xx[1:470][xx[1:470] > 80]
-#' gev.hist.fit(c(xxhist,xxsist), k = 3, h = 470, X0 = 80)
-#' gev.hist.fit(c(xxhist,xxsist), k = 3, h = 470, X0 = 80, binomialcens = TRUE)
+#' gev.hist.fit(c(xxhist,xxsist), k = length(xxhist), h = 470, X0 = 80)
+#' gev.hist.fit(c(xxhist,xxsist), k = length(xxhist), h = 470, X0 = 80, binomialcens = TRUE)
 #' ismev::gev.fit(xxsist) # note the higher standard errors  
 gev.hist.fit <-
   function(xdat, k=0, h=NULL, X0=NULL, binomialcens=FALSE, 
@@ -238,7 +238,7 @@ gev.hist.fit <-
   y0 <- 1 + xi[1] * (X0 - mu[1])/sc[1]
   if(!binomialcens & !k==0) return(sum(log(sc)) + sum(y^(-1/xi)) + sum(log(y) * (1/xi +  1)) -
                                    log(choose(h,k))-(h-k)*(-y0^(-1/xi[1])))
-  if(binomialcens & !k==0) return(sum(log(sc)) + sum(y^(-1/xi)) + sum(log(y) * (1/xi +  1)) -
+  if(binomialcens & !k==0) return(sum(log(sc[-(1:k)])) + sum(y[-(1:k)]^(-1/xi[-(1:k)])) + sum(log(y[-(1:k)]) * (1/xi[-(1:k)] +  1)) -
                                      log(choose(h,k))-(h-k)*(-y0^(-1/xi[1])) - k*log(1-exp(-y0^(-1/xi[1]))))
   }
   x <- optim(init, gev.hist.lik, k=k, h=h, binomialcens=binomialcens, hessian = TRUE, method = method,

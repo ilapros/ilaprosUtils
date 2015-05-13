@@ -53,8 +53,8 @@ The form of the GEV used is that of Coles (2001) Eq (3.2). Specifically, positiv
 set.seed(5416574)
 xx <- rgev(500, 40, 6, -0.2)
 xxsist <- xx[471:500]; xxhist <- xx[1:470][xx[1:470] > 80]
-gev.hist.fit(c(xxhist,xxsist), k = 3, h = 470, X0 = 80)
-gev.hist.fit(c(xxhist,xxsist), k = 3, h = 470, X0 = 80, binomialcens = TRUE)
+gev.hist.fit(c(xxhist,xxsist), k = length(xxhist), h = 470, X0 = 80)
+gev.hist.fit(c(xxhist,xxsist), k = length(xxhist), h = 470, X0 = 80, binomialcens = TRUE)
 ismev::gev.fit(xxsist) # note the higher standard errors
 }
 
