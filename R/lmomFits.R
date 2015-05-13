@@ -27,6 +27,7 @@
 #' library(lmom)
 #' PPmatG(x, cols = c(4,5,2), fit.lines = "gev")
 #' @export
+#' @import lmom
 PPmatG <- function(mat,cols=NULL,fit.lines="gev",ff=seq(0.005,0.995,by=0.0025),yll=NULL,timeGrid=TRUE,...){
   if(is.null(cols) | length(cols)<ncol(mat)) cols<-seq(1,ncol(mat))
   if(is.null(yll)) yll<-c(0,1.2*max(mat[,1:ncol(mat)],na.rm=TRUE))

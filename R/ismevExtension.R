@@ -5,9 +5,10 @@
 #' @param fitobj a fitted object of the class gev.fit
 #' @keywords gev.fit
 #' @examples
-#' library(ismev)
-#' print(gev.fit(c(50,45,65,78,12,23),show=FALSE))
+#' # library(ismev)
+#' print(ismev::gev.fit(c(50,45,65,78,12,23),show=FALSE))
 #' @export
+#' @import ismev
 print.gev.fit<-function(fitobj){
   zz<-list(mle=fitobj$mle,se=fitobj$se,conv=fitobj$conv,nllh=fitobj$nllh)
   print(zz)
@@ -37,7 +38,7 @@ print.glo.fit<-function(fitobj){
 #' @keywords pp.fit
 #' @examples
 #' data(rain)
-#' a <- pp.fit(rain, 10)
+#' a <- ismev::pp.fit(rain, 10)
 #' a
 #' @export
 print.pp.fit<-function(obj){
@@ -48,19 +49,37 @@ print.pp.fit<-function(obj){
 
 
 
-#' @title Fitting the GLo distribution
-#' @description This function fits the GLo distribution. It's built mirroring the \code{gev.fit} function of \code{ismev}
-#' @param xdat the object to be fitted
+
+#' @title Maximum Likelihood Fitting for the GLO distibution
+#' @description This function has the same structure as the \code{gev.fit} from \code{ismev}
+#' @param xdat A numeric vector of data to be fitted
+#' @param ydat A matrix of covariates for generalized linear modelling of the parameters (or NULL (the default) for stationary fitting). The number of rows should be the same as the length of xdat
+#' @param mul  Numeric vectors of integers, giving the columns of ydat that contain covariates for generalized linear modelling of the location parameter (or NULL (the default) if the corresponding parameter is stationary)
+#' @param sigl As \code{mul} for the scale parameter
+#' @param shl As \code{mul} for the shape parameter
+#' @param mulink the link function for the location parameter - default to identity
+#' @param siglink the link function for the scale parameter - default to identity
+#' @param shlink the link function for the shape parameter - default to identity
+#' @param muinit initial values for the location parameter
+#' @param siginit initial values for the scale parameter
+#' @param shinit initial values for the shape parameter
+#' @param method The optimization method (see \code{optim} for details)
+#' @param maxit  The maximum number of iterations 
+#' @param ...   Other control parameters for the optimization. These are passed to components of the control argument of optim.
+#' @return an object of the glo.fit class - with values which mirror the ones of the gev.fit class
 #' @keywords glo.fit
 #' @export
 #' @examples
 #' set.seed(5846)
 #' print(glo.fit(rglo(n = 80, 50, 6, -0.2), show=FALSE))
-glo.fit<-function(xdat, ydat = NULL, mul = NULL, sigl = NULL, shl = NULL, mulink = identity, siglink = identity, shlink = identity, muinit = NULL, siginit = NULL, shinit = NULL, show = TRUE, method = "Nelder-Mead", maxit = 10000, ...){
+glo.fit<-function(xdat, ydat = NULL, 
+                  mul = NULL, sigl = NULL, shl = NULL, 
+                  mulink = identity, siglink = identity, shlink = identity, 
+                  muinit = NULL, siginit = NULL, shinit = NULL, 
+                  show = TRUE, method = "Nelder-Mead", maxit = 10000, ...){
     #
     # obtains mles etc for glo distn
     #
-    ##### this is based on the gev.fit function - can not actually come with covariates yet
     z <- list()
     npmu <- length(mul) + 1
     npsc <- length(sigl) + 1
