@@ -105,7 +105,7 @@ glo.fit<-function(xdat, ydat = NULL,
     else {
       z$trans <- TRUE
       sigmat <- cbind(rep(1, length(xdat)), ydat[, sigl])
-      if( is.null( siginit)) siginit <- c(in2, rep(0, length(sigl)))
+      if( is.null(siginit)) siginit <- c(in2, rep(0, length(sigl)))
     }
     if(is.null(shl)) {
       shmat <- as.matrix(rep(1, length(xdat)))
@@ -159,19 +159,135 @@ glo.fit<-function(xdat, ydat = NULL,
 
 
 
+gumbX <- function(x, emp=FALSE) {
+  if(emp) x <- (1:length(x)-0.44)/(length(x) + 1 - 0.88)
+  -log(-log(x))
+}
+
+redVarX <- function(x, emp=FALSE) {
+  if(emp) x <- (1:length(x)-0.44)/(length(x) + 1 - 0.88)
+  log((x)/(1-x))
+}
+
+
+#' @title Plots of return curves and confidence intervals estimated by the delta method
+#' @description This function is based on the \code{ismev::gev.rl} function but also alows the case in which historical data are added to the systematic record.
+#' It plots the return curve (flood frequency curve in hydrology) based on the data and the fitted parameters for a \code{glo.fit} or \code{gev.fit} object, including ones with historical data. 
+#' The data points are plotted using the Gringorten plotting positions. 
+#' The function also outputs useful the estimated return levels and the corresponding standard error as estimated via the delta method (see Coles, 2001). 
+#' @param obj a \code{glo.fit} or \code{gev.fit} object
+#' @param p non-exceedance probabilities for which return level and standard errors are calculated. If the given non-exceedance probability don't cover the whole range of empirical non-exceedance probailities of the data the figure will automatically draw a line covering the whole range, but the output dataframe will only contain the specified non-exceedance probabilities.
+#' @param vtype a character specifying the reduced variate type to be used in the figure. The types allowed are "Gumbel", corresponding to -log(-log(p)), and "redVar", corresponding to log(p/(1-p)). The dafault is set to "redVar".
+#' @param sign.alpha significance level required for the confidence intervals - default to 0.05
+#' @param pchHist pch parameter to be used for the historical data (if present) - default to 15
+#' @param plot.out logical, indicating whether the plot should actually be displayed; set to FALSE to only compute the return levels and standard errors
+#' @param ...	Arguments to be passed to methods, such as graphical parameters (see par)
+#' @return a return levels figure and a data.frame containing the estimated return levels and corresponding standard errors for the specified exceedance probabilities
+#' @export
+#' @examples 
+#' set.seed(7821567)
+#' xx <- rglo(500, 40, 6, -0.2)
+#' xxsist <- xx[471:500]; xxhist <- xx[1:470][xx[1:470] > 80]
+#' s1 <- glo.fit(xxsist, show=FALSE) 
+#' rls1 <- retPlot(s1, sign.alpha = 0.1, col = 4, p = c(seq(0.01,0.991,length=45),seq(0.992,0.9992,length=120)))
+#' h1 <- glo.hist.fit(c(xxhist,xxsist), k = length(xxhist), h = 470, X0 = 80, show=FALSE)
+#' rlh1 <- retPlot(h1, vtype = "Gumbel", col = 1, sign.alpha = 0.05, p = rls1$p, xlab = "Gumbel reduced variate (-log(-log(1-1/T)))")
+#' lines(-log(-log(rls1$p)), rls1$retLev, col = 2)
+#' lines(-log(-log(rls1$p)), rls1$retLev+qnorm(0.025)*rls1$se, lty = 2, col = 2)
+#' lines(-log(-log(rls1$p)), rls1$retLev-qnorm(0.025)*rls1$se, lty = 2, col = 2)
+#' legend("topleft", col =c(1,2),legend = c("With historical","Systematic Only"), lty = 1)
+#' ## similar fitted curve - but large reduction in uncertainty for rare events
+retPlot <- function(obj, p=NULL, 
+                    sign.alpha = 0.05,
+                    plot.out = TRUE,
+                    vtype = "redVar", 
+                    ylim = NULL, xlim = NULL, pch = par()$pch, pchHist = 15, ...) { # , gridProb = NULL, gridLab,
+  a <- as.vector(obj$mle); mat <- as.matrix(obj$cov); dat <- as.vector(obj$data)
+  nh <- 0; nk <- 0; X0 <- 0
+  if(exists("X0",obj)){
+    nh <- obj$h; nk <- obj$k; X0 <- obj$X0
+  }
+  a <- a + 1e-006
+  if(is.null(p)) p <- c(0.01, 0.02, 0.05,0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7,0.8, 0.9, 0.95, 0.99, 0.991, seq(0.992, 0.995, by = 0.001))
+  f <- 1-p
+  fline <- f
+  ### function to calculate the right type of reduced variate
+  xcalc <- function(x, vtype, emp = FALSE) switch(vtype,"Gumbel" = gumbX(x, emp = emp),"redVar" = redVarX(x, emp = emp))
+  
+  xemp <- xcalc(c(dat,rep(mean(dat),nh)), vtype = vtype, emp = TRUE)
+  if(max(xcalc(1-f, vtype = vtype)) < max(xemp)) f <- sort(c(f, seq(1/((length(dat)+nh)), 1/(2*(length(dat)+nh)),l=120)))
+  xv <- xcalc(1-f, vtype = vtype)
+
+  ## quantiles
+  y <- switch(class(obj),
+    "glo.fit" = gloq(f,loc = a[1],scale = a[2],sh = a[3]),
+    "gev.fit" = ismev::gevq(p = f, a = a))
+
+  # Confidence intervals by means of delta method
+  v <- switch (class(obj),
+                  "glo.fit" = apply(t(glo.rl.gradient(a=a, p=f)), 1, ismev::q.form, m = mat),
+                  "gev.fit" = apply(t(ismev::gev.rl.gradient(a=a, p=f)), 1, ismev::q.form, m = mat))
+  # v <- v[seq(length(v),1)]
+  if(plot.out){
+  if(is.null(ylim)) ylim <- range(c(y, dat))
+  if(is.null(xlim)) xlim <- range(c(xv, xemp))
+  plot(xv, y, type = "n", ylim = ylim, xlim = xlim, ...)
+  lines(xv, y, ...)
+  lines(xv, y + qnorm(1-sign.alpha/2) * sqrt(v), ...)
+  lines(xv, y - qnorm(1-sign.alpha/2) * sqrt(v), ...)
+  if(!(nh > 0)){
+    points(xemp, sort(dat), pch = pch, ...)
+  }
+  if(nh > 0){
+    ### following Bayliss and Reed
+    nex <- length(dat[dat>X0])   # Number of observations > X0 (both in systematic and hist data when present)
+    n<-length(dat)-nk+nh 
+    fplot1<-NULL 
+    # fplot1 is the nex points that exceed the perception threshold 
+    # (both in systematic and hist data)
+    if(nex!=0) fplot1<-((1:nex-0.44)/(nex + 1 - 0.88))*(nex/n)
+    # flpot2 is the points that do not exceed the perception threshold in systematic data
+    fplot2 <- 
+      (nex/n)+((n-nex)/n)*((seq((nex+1),length(dat))-nex-0.44)/(n-nh-length(dat[-seq(0,nk)][dat[-seq(0,nk)]>X0])+1-0.88))
+    points(xcalc(1-fplot2, vtype = vtype),sort(dat[dat<X0], decreasing=TRUE), pch = pch, ...)
+    ### we use a different symbol for the historical data 
+    ### and it gets messy
+    dat[1:nk]<-(dat[1:nk]+0.00001) ### to make sure we identify the right ones!!!
+    histpoints<-seq(1,length(dat[dat>X0]))[(sort(dat[dat>X0]) %in% dat[1:nk])]
+    fplot3 <- sort(fplot1[length(dat[dat>X0])+1-histpoints])
+    points(xcalc(1-fplot3, vtype = vtype),
+           sort((sort(dat[dat>X0]))[histpoints],decreasing = TRUE), pch=pchHist, ... )
+    fplot4 <- sort(fplot1[-(length(dat[dat>X0])+1-histpoints)])
+    points(xcalc(1-fplot4, vtype = vtype),
+           sort((sort(dat[dat>X0]))[-histpoints],decreasing = TRUE),pch = pch, ...)
+  }
+  }
+  invisible(data.frame(p = 1-f, retLev = y, se = sqrt(v))[f %in% fline, ])
+}
+
+
+# xl <- ifelse(any(names(list(...)) == "xlab"), 
+#              list(...)["xlab"],  
+#              switch(vtype,
+#                     "Gumbel" = "Gumbel variate: -log(-log(p))",
+#                     "redVar" = "Reduced variate: log(p/(1-p))"))
+
+
 #' @title Fitted return curve for a glo.fit object
 #' @description This function mimics the \code{gev.rl} function for GLO models.
 #' It plots the flood frequency curve (return curve) based on the data and the fitted parameters for a \code{glo.fit} model, including ones with historical data. 
 #' Very ad-hoc and working under assumption that flood data are plotted (hence the y-axis lab).
 #' Also outputs useful informations. 
-#' Mostly written by Thomas Kjeldsen 
+#' Mostly written by Thomas Kjeldsen. 
+#' This function is deprecated and has been replaced by the generic retPlot function.
 #' @param a the mle estimates from a \code{glo.fit} object
 #' @param mat the covariance function from a \code{glo.fit} object
 #' @param dat data matrix from a \code{glo.fit} object
-#' @param nk if historicla data are used, the length of historical record - default is 0, no historical data
-#' @param X0 if historicla data are used, the perception threshold - default is NULL, no historical data
+#' @param nk if historical data are used, the length of historical record - default is 0, no historical data
+#' @param X0 if historical data are used, the perception threshold - default is NULL, no historical data
 #' @param f frequencies for which return level (and 95\%) confidence intervals are calculated
 #' @export
+#' @seealso \code{\link{retPlot}}
 #' @examples 
 #' set.seed(7821567)
 #' xx <- rglo(500, 40, 6, -0.2)

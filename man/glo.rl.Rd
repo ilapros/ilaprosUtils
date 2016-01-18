@@ -15,9 +15,9 @@ glo.rl(a, mat, dat, nh = 0, nk = 0, X0 = NULL, f = c(seq(0.01, 0.09, by
 
 \item{dat}{data matrix from a \code{glo.fit} object}
 
-\item{nk}{if historicla data are used, the length of historical record - default is 0, no historical data}
+\item{nk}{if historical data are used, the length of historical record - default is 0, no historical data}
 
-\item{X0}{if historicla data are used, the perception threshold - default is NULL, no historical data}
+\item{X0}{if historical data are used, the perception threshold - default is NULL, no historical data}
 
 \item{f}{frequencies for which return level (and 95\%) confidence intervals are calculated}
 }
@@ -26,7 +26,8 @@ This function mimics the \code{gev.rl} function for GLO models.
 It plots the flood frequency curve (return curve) based on the data and the fitted parameters for a \code{glo.fit} model, including ones with historical data.
 Very ad-hoc and working under assumption that flood data are plotted (hence the y-axis lab).
 Also outputs useful informations.
-Mostly written by Thomas Kjeldsen
+Mostly written by Thomas Kjeldsen.
+This function is deprecated and has been replaced by the generic retPlot function.
 }
 \examples{
 set.seed(7821567)
@@ -43,5 +44,8 @@ lines(log(rls1$f/(1-rls1$f)), rls1$rl-1.96*sqrt(rls1$var), lty = 2, col = 2)
 lines(log(rls1$f/(1-rls1$f)), rls1$rl+1.96*sqrt(rls1$var), lty = 2, col = 2)
 legend("topleft", col =c(1,2),legend = c("With historical","Systematic Only"), lty = 1)
 ## similar fitted curve - but obvious reduction in uncertainty
+}
+\seealso{
+\code{\link{retPlot}}
 }
 

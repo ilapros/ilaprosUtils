@@ -1,10 +1,10 @@
 Package: ilaprosUtils
 Title: A miscellaneous collection of functions I tend to use
-Version: 0.1
+Version: 0.1.1
 Authors@R: "Ilaria Prosdocimi <ilapro@ceh.ac.uk> [aut, cre]"
-Description: Some Functions I use to handle the Flow/Rainfall Data I get. And
+Description: Some Functions I use to handle the Flow/Rainfall data I get. And
     some addition to the ismev package that I find useful (notably, fitting the
-    GLO distribution as well). Some stuff on Lmoments as well - which mostly
+    GLO distribution and allowing the inclusion of non-systematic data). Some stuff on Lmoments as well - which mostly
     need lmom to be loaded.
 Depends:
     R (>= 3.1.0)
