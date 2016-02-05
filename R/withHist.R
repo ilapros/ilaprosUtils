@@ -268,3 +268,149 @@ gev.hist.fit <-
   class(z) <- "gev.fit"
   invisible(z)
 }
+
+
+
+
+
+
+
+#' @title L-moment estimation in the presence of Historical Data
+#' @description L-moment fitting procedures for sample of both systematic and historical data via Partial Probability Weighted Moments (Wang, 1990).
+#' @param xdat vector of historical and systematic/observed data - the first k elements of the vector should be the historical events
+#' @param k number of historical events available. These events should be stored as the first observations of the xdat vector
+#' @param h length of years covered by the information of the historical period
+#' @param X0 the perception threshold which is exceeded by the historical events. This is most likely different from the lowest historical value. It should indicate a value after which we are confident the event would have been recorded or left traces 
+#' @param nmom the number of moments to estimate
+#' @return A vector of L-moment, as lmom::samlmu.
+#' @references Wang, Q.J.(1990). Unbiased estimation of probability weighted moments and partial probability weighted moments from systematic and historical flood information and their application. Journal of hydrology, 120, 115--124.
+#' @export
+#' @examples 
+#' # library(ismev)
+#' set.seed(54165784)
+#' xx <- rgev(500, 40, 6, -0.2)
+#' xxsist <- xx[471:500]; xxhist <- xx[1:470][xx[1:470] > 80]
+#' lmh <- lmom.hist.fit(c(xxhist,xxsist), k = length(xxhist), h = 470, X0 = 80, nmom = 5)
+#' lmh
+#' lmom::pelgev(lmh)
+#' gev.hist.fit(c(xxhist,xxsist), k = length(xxhist), h = 470, X0 = 80, show = FALSE)$mle
+#' ### note the different parametrization for the shape parameter
+lmom.hist.fit <- function(xdat, k = NULL, h = NULL, X0 = NULL, nmom = 3){
+  if((is.null(k) + is.null(X0) + is.null(h)) %in% c(1,2) ) stop("I need all information (X0, k, h) on historical records")
+  if(all(is.null(k), is.null(X0), is.null(h))) {
+    lmom::samlmu(xdat, nmom = nmom)
+  }
+  else {
+    extSamlmu(wangPPWM(xcont = xdat[(k+1):(length(xdat))], xhist = xdat[1:k], 
+                       nbans = h, seuil = X0, nmom = nmom))
+  }
+}
+
+
+
+wangPPWM <- function(xcont, xhist, nbans, seuil, nmom = 3){ 
+  ## naming after the BayesMCMC function (which doesn't make sense)
+  n <- length(xcont) ## length of systematic record
+  m <- n + nbans     ## length of systematic+historical record 
+  l <- sum(xcont > seuil) + sum(xhist>seuil) ## number of events above threshold 
+  xcont <- sort(xcont)
+  xhist <- sort(xhist)
+  F0hat <- 1-l/m
+  aboveThresh <- sort(c(xcont[xcont > seuil], xhist[xhist > seuil]))
+  if(any(xhist <= seuil)) stop("all historical events should be above the threshold")
+  if(l != length(aboveThresh)) stop("something non-matching in length of obs. above threshold")
+  ### the betas
+  beta.second <- rep(0,nmom)
+  for(r in 1:nmom){
+    for(i in 1:n){
+      beta.second[r] <- beta.second[r] +
+        choose(i-1, (r-1)) * ifelse(xcont[i] <= seuil, xcont[i], 0)
+    } 
+    beta.second[r] <- ((n * choose(n-1, (r-1)))^(-1)) * beta.second[r]
+  } 
+  beta.prime <- rep(0,nmom)
+  for(r in 1:nmom){
+    for(i in seq(from = (m-l+1), to = m)){
+      ## i goes to the high number -
+      ## we do not have the values below the threshold for the m historical years  
+      beta.prime[r] <- beta.prime[r] +
+        choose(i-1, (r-1)) * aboveThresh[i-(m-l)]
+    }
+    beta.prime[r] <- ((m * choose(m-1, (r-1)))^(-1)) * beta.prime[r]
+  }
+  #   print(c(F0hat, 1/(1-F0hat), beta.second,beta.prime))
+  #   beta.prime <- c(1/(1-F0hat),1/(1-F0hat^2), 1/(1-F0hat^3)) * beta.prime
+  #   beta.second <- c(1/(1-F0hat),1/(1-F0hat^2), 1/(1-F0hat^3)) * beta.second
+  list(beta.prime = beta.prime, beta.second = beta.second, 
+       betas = beta.prime+beta.second)
+}
+
+
+extSamlmu <- function(x) {
+  firstOut <- lmomcopwm2lmom(x)
+  out <- c(firstOut$lambdas[1:2],firstOut$ratios[3:length(firstOut$ratios)])
+  names(out) <- c("l_1","l_2", paste("t",seq(3,length(firstOut$ratios), by = 1),sep = "_")) 
+  out
+}
+
+
+
+### copy of lmomco::pwm2lmom - avoid having to depend on the package
+lmomcopwm2lmom <- function (pwm){
+  if (is.list(pwm)) {
+    if (!is.null(pwm$BETA0)) {
+      z <- list(L1 = NULL, L2 = NULL, TAU3 = NULL, TAU4 = NULL, 
+                TAU5 = NULL, LCV = NULL, L3 = NULL, L4 = NULL, 
+                L5 = NULL)
+      z$L1 <- pwm$BETA0
+      z$L2 <- 2 * pwm$BETA1 - pwm$BETA0
+      z$L3 <- 6 * pwm$BETA2 - 6 * pwm$BETA1 + pwm$BETA0
+      z$L4 <- 20 * pwm$BETA3 - 30 * pwm$BETA2 + 12 * pwm$BETA1 - 
+        pwm$BETA0
+      z$L5 <- 70 * pwm$BETA4 - 140 * pwm$BETA3 + 90 * pwm$BETA2 - 
+        20 * pwm$BETA1 + pwm$BETA0
+      z$LCV <- z$L2/z$L1
+      z$TAU3 <- z$L3/z$L2
+      z$TAU4 <- z$L4/z$L2
+      z$TAU5 <- z$L5/z$L2
+      return(z)
+    }
+    if (!is.null(pwm$betas)) {
+      pwm <- pwm$betas
+    }
+    else {
+      warning("ambiguous call, do not find Betas for processing")
+      return(NULL)
+    }
+  }
+  nmom <- length(pwm)
+  L <- vector(mode = "numeric", length = nmom)
+  R <- vector(mode = "numeric", length = nmom)
+  for (i in seq(1, nmom)) {
+    r <- i - 1
+    sum <- 0
+    for (k in seq(0, r)) {
+      weight <- (-1)^(r - k) * choose(r, k) * choose(r + 
+                                                       k, k)
+      sum <- sum + weight * pwm[k + 1]
+    }
+    L[i] <- sum
+  }
+  if (nmom >= 2) {
+    R[2] <- L[2]/L[1]
+  }
+  if (nmom >= 3) {
+    for (r in seq(3, nmom)) {
+      R[r] <- L[r]/L[2]
+    }
+  }
+  R[1] <- NA
+  z <- list(lambdas = L, ratios = R, source = "pwm2lmom")
+  return(z)
+}
+
+
+
+
+
+
