@@ -1,0 +1,194 @@
+---
+title: "Combining systematic records and historical information for the statistcal estimation of flood frequency curves"
+author: "Ilaria Prosdocimi"
+date: "`r Sys.Date()`"
+fig_caption: yes
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Combining systematic records and historical information for the statistcal estimation of flood frequency curves}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This document presents how to use R to combine historical flow data and systematic gauged records to estimate flood frequency curves. 
+The functions discussed in the document are mostly contained in the `ilaprosUtils` package developed by Ilaria Prosdocimi. Functions to include historical data under a Bayesian inference appraoch are included in the external and independently developed package `nsRFA`, which is not discussed further in here. The reader interested in the Bayesian formulation of the estimation procedure is encouraged to read the help page of the package `?nsRFA::BayesianMCMC` function and the vignette _Local and regional analyses with BayesianMCMC_. When using the `nsRFA::BayesianMCMC` function there might be sometimes issues in the convergence of the MCMC chains, something that can not eaily be fixed within the `nsRFA` sets of functions. 
+
+
+To illustrate the different methods it is assumed that some 40 years of gauged flow are available at at a certain gaugung station.
+
+```{r, fig.show='hold'}
+syst <- data.frame(Year = seq(1976,2015), 
+                   Flow = c(300.346, 527.381, 410.964, 224.615, 370.688, 275.477, 
+                            345.358, 439.179, 117.119, 371.371, 386.094, 458.024, 
+                            286.608, 264.741, 262.419, 453.842, 715.718, 480.023, 
+                            316.092, 479.976, 457.083, 317.254, 378.389, 249.409,
+                            384.964, 228.965, 291.549, 370.726, 235.923, 229.726, 
+                            376.540, 326.176, 553.550, 318.610, 105.712, 309.667, 
+                            375.903, 523.235, 257.639, 229.343))
+with(syst, plot(Year,Flow,type="h"))
+```
+
+Assuming that the data come from a GLO distribution (the default distribution for British flow series), estimates for the distribution parameter based on the at-site series can be obtained wither via the L-Moment or the maximum likelihood approach as shown below. 
+
+```{r}
+lmom::samlmu(syst$Flow) ## at-site L-moments
+## GLO parameter estimates via L-moment approach
+systOnlyLmom <- lmom::pelglo(lmom::samlmu(syst$Flow)) 
+## GLO parameter estimates via Maximum Likelihood approach
+systOnlyMaxL <- ilaprosUtils::glo.fit(syst$Flow, show = FALSE)
+systOnlyMaxL$conv ## if 0 model has converged
+systOnlyLmom; systOnlyMaxL$mle ## not very different
+```
+The resulting flood frequency curves are shown below (notice the use of the `retPlot` function from the `ilaprosUtils` package).
+
+```{r, fig.show='hold'}
+## ?ilaprosUtils::retPlot
+rlSOML <- ilaprosUtils::retPlot(systOnlyMaxL, pch = 16, sign.alpha = 0)
+lines(log(rlSOML$p/(1-rlSOML$p)), 
+      lmom::quaglo(f = rlSOML$p, para = systOnlyLmom), col = 2)
+```
+
+Imagine that some historical information was available for the area of interest and we knew that three floods had happened in the 250 years before the beginning of the systematic record, namely in year 1770, 1850 and 1920, with peak flow values assesed to be of size 840, 820 and 870 $m^3/s$ resepctively. From the careful analysis of historical records it is deemed that these three flow records are the biggest and only events above 800 $m^3/s$ which have happened in the historical period. 
+
+The historical data are combined with the systematic record in the Figure below. 
+
+```{r, fig.show='hold'}
+hist <- data.frame(Year = c(1770, 1850, 1920),  ## only needed for plotting
+                   Flow = c(840, 820, 870))
+with(syst, plot(Year, Flow, type="h", xlim =  c(1976-250, 2015), ylim = c(0,900)))
+lines(hist$Year, hist$Flow, type="h", col = 2)
+abline(h = 800, col = 4, lty = 4) ## perception threshold
+```
+
+
+To include the historical data in the estimation procedures the typical L-moments and maximum likelihood appraoches need to be slightly modified as outlined in Wang (1990) and Stedinger and Cohn (1986). L-moments based on the Partial Probabilty Weighted Moment appraoch can be obtained using the `ilaprosUtils::lmom.hist.fit` function, while the extension for the maximum likelhood can be applied using `ilaprosUtils::glo.hist.fit` (at time of writing only the GLO and GEV distribution were implemented for the maximum likehood approach - see `ilaprosUtils::gev.hist.fit`). 
+
+
+```{r}
+ll <- ilaprosUtils::lmom.hist.fit(
+            xdat = c(hist$Flow,syst$Flow), ## all data combined
+            h = 250, ## historical period length
+            X0 = 800, ## perception threshol
+            k = 3, ## number of historical peaks
+            nmom = 4)
+        
+## GLO parameter estimates via L-moment approach
+withHistLmom <- lmom::pelglo(ll); rm(ll)
+## GLO parameter estimates via Maximum Likelihood approach
+withHistMaxL <- ilaprosUtils::glo.hist.fit(
+            xdat = c(hist$Flow,syst$Flow), ## all data combined
+            h = 250, ## historical period length
+            X0 = 800, ## perception threshol
+            k = 3, ## number of historical peaks
+            show = FALSE)
+withHistMaxL$conv ## if 0 model has converged - check!
+withHistLmom; withHistMaxL$mle ## somewhat different
+```
+
+The resulting flood frequency curves are shown in the Figure below, with the dashed lines indicating the estimates obtained when including the historical information in the estiamtion procedure. 
+
+```{r, fig.show='hold'}
+## ?ilaprosUtils::retPlot
+## retPlot recognises that some data are from an historical record
+## displayed as filled squares
+rlWHML <- ilaprosUtils::retPlot(withHistMaxL, 
+                p = c(seq(0.01,0.92,l=50),seq(0.92,.998,l=20)),
+                pch = 16, sign.alpha = 0, lty = 2)
+## Sysy. only  max lik
+lines(log(rlWHML$p/(1-rlWHML$p)), 
+      lmom::quaglo(f = rlWHML$p, para = systOnlyMaxL$mle), col = 1)
+## Sysyonly - Lmoments
+lines(log(rlWHML$p/(1-rlWHML$p)), 
+      lmom::quaglo(f = rlWHML$p, para = systOnlyLmom), col = 2)
+## With Histoircal info - Lmoments
+lines(log(rlWHML$p/(1-rlWHML$p)), 
+      lmom::quaglo(f = rlWHML$p, para = withHistLmom), col = 2, lty = 2)
+
+legend("topleft", col = c(1,1,2,2), lty = c(1,2,1,2), bty = "n",
+       legend = c("Syst. only - ML", "With Hist. - ML",
+                  "Syst. only - Lmom", "With Hist. - Lmom"))
+legend("bottomright", pch = c(16,15), bty = "n",
+       legend = c("Systematic data", "Historical data"))
+```
+
+
+In some cases it might happen that the actual values of the historical peak flows can not be assesed with sufficent confidence and only the information on the threshold exceedance is known. That is to say it is only knwon that a flood larger than X0 has occured but the size of the peak cannot be assesed: this case is referred in Stedinger and Cohn (1986) as binomial censoring. The Partial Probability Weighted Moments apporach was not extended to cope with this binomal censored data, while the maximum likelihood approach can easily include such information, as shown below. 
+
+
+```{r}
+## GLO parameter estimates via Maximum Likelihood approach
+## Under Binomial censoring
+withBinCMaxL <- ilaprosUtils::glo.hist.fit(
+            ### The first points only need to be larger than X0           
+            xdat = c(801, 801, 801 ,syst$Flow), ## all data combined
+            h = 250, ## historical period length
+            X0 = 800, ## perception threshol
+            k = 3, ## number of historical peaks
+            binomialcens = TRUE,
+            show = FALSE)
+withBinCMaxL$conv ## if 0 model has converged - check!
+withBinCMaxL$mle; withHistMaxL$mle ## little difference
+```
+
+
+
+
+*References* 
+
+
+Stedinger, J. R. and Cohn, T. A. (1986). Flood Frequency Analysis With Historical and Paleoflood Information. Water Resources Research, 22, 785--793. 
+
+\ 
+
+Wang, Q.J.(1990). Unbiased estimation of probability weighted moments and partial probability weighted moments from systematic and historical flood information and their application. 
+Journal of hydrology, 120, 115--124.
+
+
+
+Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
+
+- Never uses retina figures
+- Has a smaller default figure size
+- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
+
+## Vignette Info
+
+Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+
+## Styles
+
+The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+
+    output: 
+      rmarkdown::html_vignette:
+        css: mystyles.css
+
+## Figures
+
+The figure sizes have been customised so that you can easily put two images side-by-side. 
+
+```{r, fig.show='hold'}
+plot(1:10)
+plot(10:1)
+```
+
+You can enable figure captions by `fig_caption: yes` in YAML:
+
+    output:
+      rmarkdown::html_vignette:
+        fig_caption: yes
+ 
+Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+
+## More Examples
+
+You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(head(mtcars, 10))
+```
+
+Also a quote using `>`:
+
+> "He who gives up [code] safety for [code] speed deserves neither."
+([via](https://twitter.com/hadleywickham/status/504368538874703872))
