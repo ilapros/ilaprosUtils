@@ -1,5 +1,5 @@
 # ilaprosUtils
-*Ilaria Prosdocimi* (ilapro@ceh.ac.uk)
+*Ilaria Prosdocimi* (prosdocimi.ilaria@gmail.com)
 
 A bunch of functions in R I find useful - mostly extreme values stuff and things
 To use this set of functions you will need to run the following in R: 
