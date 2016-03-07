@@ -31,7 +31,6 @@
 #' glo.fit(xxsist) ## notice the higher standard errors
 glo.hist.fit<-
   function(xdat,k=0,h=NULL,X0=NULL,binomialcens=FALSE,ydat = NULL, 
-           mul = NULL, sigl = NULL, shl = NULL, 
            mulink = identity, siglink = identity, shlink = identity, 
            muinit = NULL, siginit = NULL, shinit = NULL, show = TRUE, 
            method = "Nelder-Mead", maxit = 10000, ...)
@@ -46,10 +45,11 @@ glo.hist.fit<-
     ## k is the number of event you see in the past
     ## X0 is the perception threshold
     if(k == 0 & !(is.null(h) & is.null(X0))) {warning("no historical data given, dropping X0 and h"); h=0; X0 = NULL} 
-    z <- list()
+    mul = NULL; sigl = NULL; shl = NULL
     npmu <- length(mul) + 1
     npsc <- length(sigl) + 1
     npsh <- length(shl) + 1
+    z <- list()
     z$trans <- FALSE  # if maximization fails, could try
     # changing in1 and in2 which are 
     # initial values for minimization routine
