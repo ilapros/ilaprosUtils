@@ -405,7 +405,7 @@ lmomcopwm2lmom <- function (pwm){
     }
   }
   R[1] <- NA
-  z <- list(lambdas = L, ratios = R, source = "pwm2lmom")
+  z <- list(lambdas = L, ratios = R)
   return(z)
 }
 
