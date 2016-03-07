@@ -85,9 +85,9 @@ To include the historical data in the estimation procedures the typical L-moment
 ll <- ilaprosUtils::lmom.hist.fit(
             xdat = c(hist$Flow,syst$Flow), ## all data combined
             h = 250, ## historical period length
-            X0 = 800, ## perception threshol
+            X0 = 800, ## perception threshold
             k = 3, ## number of historical peaks
-            nmom = 4)
+            nmom = 4) ## number of L-mom parameters 
         
 ## GLO parameter estimates via L-moment approach
 withHistLmom <- lmom::pelglo(ll); rm(ll)
@@ -95,7 +95,7 @@ withHistLmom <- lmom::pelglo(ll); rm(ll)
 withHistMaxL <- ilaprosUtils::glo.hist.fit(
             xdat = c(hist$Flow,syst$Flow), ## all data combined
             h = 250, ## historical period length
-            X0 = 800, ## perception threshol
+            X0 = 800, ## perception threshold
             k = 3, ## number of historical peaks
             show = FALSE)
 withHistMaxL$conv ## if 0 model has converged - check!
@@ -117,7 +117,7 @@ lines(log(rlWHML$p/(1-rlWHML$p)),
 ## Sysyonly - Lmoments
 lines(log(rlWHML$p/(1-rlWHML$p)), 
       lmom::quaglo(f = rlWHML$p, para = systOnlyLmom), col = 2)
-## With Histoircal info - Lmoments
+## With Historical  info - Lmoments
 lines(log(rlWHML$p/(1-rlWHML$p)), 
       lmom::quaglo(f = rlWHML$p, para = withHistLmom), col = 2, lty = 2)
 
@@ -139,7 +139,7 @@ withBinCMaxL <- ilaprosUtils::glo.hist.fit(
             ### The first points only need to be larger than X0           
             xdat = c(801, 801, 801 ,syst$Flow), ## all data combined
             h = 250, ## historical period length
-            X0 = 800, ## perception threshol
+            X0 = 800, ## perception threshold
             k = 3, ## number of historical peaks
             binomialcens = TRUE,
             show = FALSE)

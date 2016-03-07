@@ -148,9 +148,9 @@ rlSOML &lt;-<span class="st"> </span>ilaprosUtils::<span class="kw">retPlot</spa
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ll &lt;-<span class="st"> </span>ilaprosUtils::<span class="kw">lmom.hist.fit</span>(
             <span class="dt">xdat =</span> <span class="kw">c</span>(hist$Flow,syst$Flow), ## all data combined
             <span class="dt">h =</span> <span class="dv">250</span>, ## historical period length
-            <span class="dt">X0 =</span> <span class="dv">800</span>, ## perception threshol
+            <span class="dt">X0 =</span> <span class="dv">800</span>, ## perception threshold
             <span class="dt">k =</span> <span class="dv">3</span>, ## number of historical peaks
-            <span class="dt">nmom =</span> <span class="dv">4</span>)
+            <span class="dt">nmom =</span> <span class="dv">4</span>) ## number of L-mom parameters 
         
 ## GLO parameter estimates via L-moment approach
 withHistLmom &lt;-<span class="st"> </span>lmom::<span class="kw">pelglo</span>(ll); <span class="kw">rm</span>(ll)
@@ -158,7 +158,7 @@ withHistLmom &lt;-<span class="st"> </span>lmom::<span class="kw">pelglo</span>(
 withHistMaxL &lt;-<span class="st"> </span>ilaprosUtils::<span class="kw">glo.hist.fit</span>(
             <span class="dt">xdat =</span> <span class="kw">c</span>(hist$Flow,syst$Flow), ## all data combined
             <span class="dt">h =</span> <span class="dv">250</span>, ## historical period length
-            <span class="dt">X0 =</span> <span class="dv">800</span>, ## perception threshol
+            <span class="dt">X0 =</span> <span class="dv">800</span>, ## perception threshold
             <span class="dt">k =</span> <span class="dv">3</span>, ## number of historical peaks
             <span class="dt">show =</span> <span class="ot">FALSE</span>)
 withHistMaxL$conv ## if 0 model has converged - check!</code></pre></div>
@@ -180,7 +180,7 @@ rlWHML &lt;-<span class="st"> </span>ilaprosUtils::<span class="kw">retPlot</spa
 ## Sysyonly - Lmoments
 <span class="kw">lines</span>(<span class="kw">log</span>(rlWHML$p/(<span class="dv">1</span>-rlWHML$p)), 
       lmom::<span class="kw">quaglo</span>(<span class="dt">f =</span> rlWHML$p, <span class="dt">para =</span> systOnlyLmom), <span class="dt">col =</span> <span class="dv">2</span>)
-## With Histoircal info - Lmoments
+## With Historical  info - Lmoments
 <span class="kw">lines</span>(<span class="kw">log</span>(rlWHML$p/(<span class="dv">1</span>-rlWHML$p)), 
       lmom::<span class="kw">quaglo</span>(<span class="dt">f =</span> rlWHML$p, <span class="dt">para =</span> withHistLmom), <span class="dt">col =</span> <span class="dv">2</span>, <span class="dt">lty =</span> <span class="dv">2</span>)
 
@@ -197,7 +197,7 @@ withBinCMaxL &lt;-<span class="st"> </span>ilaprosUtils::<span class="kw">glo.hi
             ### The first points only need to be larger than X0           
             <span class="dt">xdat =</span> <span class="kw">c</span>(<span class="dv">801</span>, <span class="dv">801</span>, <span class="dv">801</span> ,syst$Flow), ## all data combined
             <span class="dt">h =</span> <span class="dv">250</span>, ## historical period length
-            <span class="dt">X0 =</span> <span class="dv">800</span>, ## perception threshol
+            <span class="dt">X0 =</span> <span class="dv">800</span>, ## perception threshold
             <span class="dt">k =</span> <span class="dv">3</span>, ## number of historical peaks
             <span class="dt">binomialcens =</span> <span class="ot">TRUE</span>,
             <span class="dt">show =</span> <span class="ot">FALSE</span>)
