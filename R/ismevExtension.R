@@ -30,6 +30,20 @@ print.glo.fit<-function(fitobj){
 
 
 
+#' nicer print of gpd.fit results
+#'
+#' This function prints the MLE, se, convergence info and negative log-likelihood value.
+#' @param fitobj a fitted object of the class pp.fit
+#' @keywords gpd.fit
+#' @examples
+#' a <- ismev::gpd.fit(c(53, 52, 49, 58, 50, 48, 47, 50, 46, 46, 49, 51, 47, 49, 50), threshold = 46, show=FALSE)
+#' a
+#' @export
+print.gpd.fit<-function(fitobj){
+  zz<-list(mle=fitobj$mle,se=fitobj$se,conv=fitobj$conv,nllh=fitobj$nllh)
+  print(zz)
+}
+
 
 #' nicer print of pp.fit results
 #'
@@ -41,8 +55,8 @@ print.glo.fit<-function(fitobj){
 #' a <- ismev::pp.fit(rain, 10)
 #' a
 #' @export
-print.pp.fit<-function(obj){
-  res<-list(mle=obj$mle,se=obj$se,nllh=obj$nllh)
+print.pp.fit<-function(fitobj){
+  res<-list(mle=fitobj$mle,se=fitobj$se,conv=fitobj$conv,nllh=fitobj$nllh)
   print(res)
 }
 

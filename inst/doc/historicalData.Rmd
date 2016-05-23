@@ -6,11 +6,12 @@ date: '`r Sys.Date()`'
 output: 
   html_document: 
     highlight: tango
+    keep_md: yes
 fig_caption: yes
 vignette: >
   %\VignetteIndexEntry{Combining systematic records and historical information for the statistcal estimation of flood frequency curves}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 <style>
 img{

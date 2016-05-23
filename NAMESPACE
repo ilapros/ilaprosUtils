@@ -2,6 +2,7 @@
 
 S3method(print,gev.fit)
 S3method(print,glo.fit)
+S3method(print,gpd.fit)
 S3method(print,pp.fit)
 export(PPlinesG)
 export(PPmatG)
