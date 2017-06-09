@@ -256,7 +256,6 @@ gev.hist.fit <-
   z$cov <- solve(x$hessian)
   z$se <- sqrt(diag(z$cov))
   z$vals <- cbind(mu, sc, xi)
-  z$k <- z$k; z$h <- z$h; z$X0 <- z$X0
   if (show) {
     if (z$trans) 
       print(z[c(2, 3, 4)])
@@ -264,7 +263,7 @@ gev.hist.fit <-
     if (!z$conv) 
       print(z[c(5, 7, 9)])
   }
-  z$k <- z$k; z$h <- z$h; z$X0 <- z$X0
+  z$k<-k;z$h<-h;z$X0<-X0
   class(z) <- "gev.fit"
   invisible(z)
 }
