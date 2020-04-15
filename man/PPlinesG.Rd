@@ -8,12 +8,12 @@ PPlinesG(mat = NULL, pars = NULL, cols = NULL, fit.lines = "gev",
   ff = seq(0.005, 0.995, by = 0.0025), ...)
 }
 \arguments{
-\item{mat}{data matrix, each column will be analaysed seperately.}
+\item{mat}{data matrix, each column will be analysed seperately.}
 
 \item{pars}{matrix of parameter estimates. 
 Each column should correspond to a parameter, each line to an observation (station).}
 
-\item{cols}{colour in which the lines points of each row should be dislayed}
+\item{cols}{colour in which the lines points of each row should be displayed}
 
 \item{fit.lines}{a character string indicating the distribution to be used to draw the fitted line. 
 Current options are "gev" (default), "glo", "gpa", "gamma"}
@@ -41,4 +41,3 @@ pars <- t(apply(x,2,function(x) pelglo(samlmu(x))))
 PPlinesG(pars = pars, cols= c(4,5,2), lty=2)
 PPlinesG(mat  = x, cols= c(4,5,2), lty=3, fit.lines = "gamma")
 }
-

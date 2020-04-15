@@ -53,7 +53,7 @@ lmom::samlmu(syst$Flow) ## at-site L-moments
 ## GLO parameter estimates via L-moment approach
 systOnlyLmom <- lmom::pelglo(lmom::samlmu(syst$Flow)) 
 ## GLO parameter estimates via Maximum Likelihood approach
-systOnlyMaxL <- ilaprosUtils::glo.fit(syst$Flow, show = FALSE)
+systOnlyMaxL <- ilaprosUtils::glod.fit(syst$Flow, show = FALSE)
 systOnlyMaxL$conv ## if 0 model has converged
 systOnlyLmom; systOnlyMaxL$mle ## not very different
 ```

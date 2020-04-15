@@ -2,19 +2,21 @@
 % Please edit documentation in R/ismevExtension.R
 \name{print.gpd.fit}
 \alias{print.gpd.fit}
-\title{nicer print of gpd.fit results}
+\title{Nicer print of gpd.fit results}
 \usage{
-\method{print}{gpd.fit}(fitobj)
+\method{print}{gpd.fit}(x, ...)
 }
 \arguments{
-\item{fitobj}{a fitted object of the class pp.fit}
+\item{x}{a fitted object of the class pp.fit.}
+
+\item{...}{further arguments passed to \code{print}.}
 }
 \description{
 This function prints the MLE, se, convergence info and negative log-likelihood value.
 }
 \examples{
-a <- ismev::gpd.fit(c(53, 52, 49, 58, 50, 48, 47, 50, 46, 46, 49, 51, 47, 49, 50), threshold = 46, show=FALSE)
+y <- c(53, 52, 49, 58, 50, 48, 47, 50, 46, 46, 49, 51, 47, 49, 50) 
+a <- ismev::gpd.fit(y, threshold = 46, show=FALSE)
 a
 }
 \keyword{gpd.fit}
-

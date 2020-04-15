@@ -23,4 +23,4 @@ A modified version of the \code{nsRFA::gofXXXtest}.
 The main differences are in the pvalues: this one are correct, the original ones are 1-pvalue.
 In the code lmoments are estimated using the lmom library
 }
-
+\concept{nsRFA GOF tests}

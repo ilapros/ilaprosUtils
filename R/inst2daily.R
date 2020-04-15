@@ -8,13 +8,12 @@
 #' @param indVec the column number which identifies the variable of interest column.
 #' @name inst2daily
 #' @details As the name betrays this was built to process 15-minutes data and identify daily maxima. 
-#' It still work to extract monthy or annual maxima. 
+#' It still work to extract monthly or annual maxima. 
 #' 
 #' 
-#' 
-#' Could probably be achived via dplyr as well.
 #' @return an object of the same class and size as zz, 
-#' in which only values wich are the maximum value for the indVec column in the indFac groups are kept.
+#' in which only values which are the maximum value for the indVec column 
+#' in the indFac groups are kept.
 #' @examples 
 #' set.seed(145)
 #' zz <- data.frame(month = c(rep("Jan",5),rep("Feb",5),rep("Mar",5),rep("Apr",5)), 
@@ -38,8 +37,4 @@ inst2daily<-function(zz, indFac, indVec){
   out <- zz[ind,]
   return(out)
 }
-
-
-
-
 

@@ -37,4 +37,3 @@ gev.hist.fit(c(xxhist,xxsist), k = length(xxhist), h = 470, X0 = 80, show = FALS
 \references{
 Wang, Q.J.(1990). Unbiased estimation of probability weighted moments and partial probability weighted moments from systematic and historical flood information and their application. Journal of hydrology, 120, 115--124.
 }
-

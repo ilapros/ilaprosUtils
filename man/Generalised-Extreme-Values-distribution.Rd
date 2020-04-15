@@ -4,9 +4,9 @@
 \alias{Generalised Extreme Values distribution}
 \alias{dgev}
 \alias{pgev}
-\alias{qgev}
 \alias{rgev}
-\title{The Generalised Extreme Values distibution}
+\alias{qgev}
+\title{The Generalised Extreme Values distribution}
 \usage{
 dgev(x, loc, scale, sh)
 
@@ -32,22 +32,42 @@ rgev(n, loc, scale, sh)
 \item{n}{number of observations. If \code{length(n) > 1}, the length is taken to be the number required.}
 }
 \value{
-These function mimic the standard output of distributions in R see \code{?pnorm}.
+dgev gives the density, pgev gives the distribution function, qgev gives the quantile function, and rgev generates random deviates.
+The length of the result is determined by n for rgev, and is the maximum of the lengths of the numerical arguments for the other functions.
+The numerical arguments are recycled to the length of the result. 
+Only the first elements of the logical arguments are used.
 }
 \description{
-Density, distribution function, quantile function and random generation for the Generalised Extreme Values distribution with location parameter equal to \code{loc}, scale paraemter equale to \code{scale} and shape parameter equal to \code{shape}
+Density, distribution function, quantile function and random generation for 
+the Generalised Extreme Values distribution with location parameter equal to \code{loc}, 
+scale parameter equal to \code{scale} and shape parameter equal to \code{sh}. 
+The functions use the Hosking and Wallis notation so that the domain of the distribution 
+has an upper bound when the shape parameter is positive.
 }
 \details{
-Extra care should be taken on the shape parameter of the distribution as the HW and the Coles' version differ in the sign of the shape parameter: be careful!
+Extra care should be taken on the shape parameter of the distribution.
+Different notations are used in the scientific literature: in one notation, presented 
+for example in the Hosking and Wallis book and common in hydrology, 
+the domain of the distribution has an upper bound when the shape parameter is positive. 
+Conversely, in one notation, presented for example in Coles' book and Wikipedia and 
+common in statistics, the domain of the distribution has a lower bound when the shape parameter is positive. 
+The two notation only differ for the sign of the shape parameter. 
+The functions in this package use the Hosking and Wallis notation for consistency with the \code{\link{pglo}} functions. 
+Nevertheless the fitting in the \code{gev.fit} function is based on the \code{isemv::gev.fit} function written by Stuart Coles which uses the 
+Coles' notation: be aware of these differences!
 }
 \examples{
 plot(seq(-15,40,by=0.2),dgev(seq(-15,40,by=0.2),4,6,0.2),type="l")
 plot(ecdf(rgev(100,4,6,0.2)))
 lines(seq(-15,40,by=0.5),pgev(seq(-15,40,by=0.5),4,6,0.2),col=2)
-qgev(c(0.5,0.99,0.995,0.995,0.999),4,6,0.2) # the 1-in-2years, 1-in-100years, 1-in-200years, 1-in-1000years events
+qgev(c(0.5,0.99,0.995,0.995,0.999),4,6,0.2) 
+# notable quantiles
 }
+\references{
+Hosking, J.R.M. and Wallis, J.R., 2005. Regional frequency analysis: an approach based on L-moments. Cambridge university press.
+}
+\concept{gev distribution}
 \keyword{Extreme}
 \keyword{Generalised}
 \keyword{Values}
-\keyword{distibution}
-
+\keyword{distribution}

@@ -89,7 +89,7 @@ turnpoints<-function (x) {
 #' \code{mintimeDiff} can not be given as an actual time measuraments, it is just an indicator of how many postions apart 
 #' in the \code{vecTIme} vector two peaks need to be to be considered independent. 
 #' Therefore \code{vecTIme} needs to be equally spaced, 
-#' e.g. if missing values are present in the orignal file they should be infilled. 
+#' e.g. if missing values are present in the original file they should be infilled. 
 #' @return a list of 0-1 values which indicate whether the \code{vecObs}value is a peak 
 #' @examples 
 #' zz <- data.frame(hour=seq(1, 240),

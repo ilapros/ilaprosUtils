@@ -1,9 +1,7 @@
 
-
-
-
-#' @title Maximum Likelihood Fitting for the GEV distibution in the presence of Historical Data
-#' @description ML fitting procedures for sample of both systematic and historical data. Function structure inspired by \code{gev.fit} in ismev. 
+#' @title Maximum Likelihood Fitting for the GLO distribution in the presence of Historical Data
+#' @description ML fitting procedures for sample of both systematic and historical data. 
+#' Function structure inspired by \code{gev.fit} in ismev and similar to \code{\link{gev.hist.fit}}. 
 #' Arguments naming and likelihood implementation follow Stedinger and Cohn (1986). 
 #' @param xdat vector of historical and systematic/observed data - the first k elements of the vector should be the historical events
 #' @param k number of historical events available. These events should be stored as the first observations of the xdat vector
@@ -16,21 +14,28 @@
 #' @param muinit initial values for the location parameter
 #' @param siginit initial values for the scale parameter
 #' @param shinit initial values for the shape parameter
+#' @param show  Logical; if \code{TRUE} (the default), print details of the fit.
 #' @param method The optimization method (see \code{optim} for details)
 #' @param maxit  The maximum number of iterations 
 #' @param ...   Other control parameters for the optimization. These are passed to components of the control argument of optim.
-#' @details The form of the GEV used is that of Coles (2001) Eq (3.2). Specifically, positive values of the shape parameter imply a heavy tail, and negative values imply a bounded upper tail.
-#' @return An object of the class \code{gev.fit}. 
+#' @return An object of the class \code{glo.fit}. 
+#' @seealso \code{\link{gev.hist.fit}}, \code{\link{dglo}}, Vignette on historical data
 #' @export
+#' @references 
+#' Hosking, J.R.M. and Wallis, J.R., 2005. Regional frequency analysis: an approach based on L-moments. Cambridge university press. 
+#' 
+#' Stedinger, J.R. and Cohn, T.A., 1986. Flood frequency analysis with historical and paleoflood information. Water resources research, 22(5), pp.785-793.
+#' 
+#' Macdonald, N., Kjeldsen, T.R., Prosdocimi, I. and Sangster, H., 2014. Reassessing flood frequency for the Sussex Ouse, Lewes: the inclusion of historical flood information since AD 1650. Natural Hazards and Earth System Sciences, 14(10), pp.2817-2828.
 #' @examples 
 #' set.seed(7821567)
 #' xx <- rglo(500, 40, 6, -0.2)
 #' xxsist <- xx[471:500]; xxhist <- xx[1:470][xx[1:470] > 80]
 #' glo.hist.fit(c(xxhist,xxsist), k = length(xxhist), h = 470, X0 = 80)
 #' glo.hist.fit(c(xxhist,xxsist), k = length(xxhist), h = 470, X0 = 80, binomialcens = TRUE)
-#' glo.fit(xxsist) ## notice the higher standard errors
+#' glod.fit(xxsist) ## notice the higher standard errors
 glo.hist.fit<-
-  function(xdat,k=0,h=NULL,X0=NULL,binomialcens=FALSE,ydat = NULL, 
+  function(xdat,k=0,h=NULL,X0=NULL,binomialcens=FALSE,
            mulink = identity, siglink = identity, shlink = identity, 
            muinit = NULL, siginit = NULL, shinit = NULL, show = TRUE, 
            method = "Nelder-Mead", maxit = 10000, ...)
@@ -61,7 +66,7 @@ glo.hist.fit<-
     }
     else {
       z$trans <- TRUE
-      mumat <- cbind(rep(1, length(xdat)), ydat[, mul])
+      mumat <- cbind(rep(1, length(xdat)))
       if( is.null( muinit)) muinit <- c(in1, rep(0, length(mul)))
     }
     if(is.null(sigl)) {
@@ -70,7 +75,7 @@ glo.hist.fit<-
     }
     else {
       z$trans <- TRUE
-      sigmat <- cbind(rep(1, length(xdat)), ydat[, sigl])
+      sigmat <- cbind(rep(1, length(xdat)))
       if( is.null( siginit)) siginit <- c(in2, rep(0, length(sigl)))
     }
     if(is.null(shl)) {
@@ -79,7 +84,7 @@ glo.hist.fit<-
     }
     else {
       z$trans <- TRUE
-      shmat <- cbind(rep(1, length(xdat)), ydat[, shl])
+      shmat <- cbind(rep(1, length(xdat)))
       if( is.null( shinit)) shinit <- c(0.1, rep(0, length(shl)))
     }
     if(is.null(X0)) {
@@ -133,7 +138,7 @@ glo.hist.fit<-
 }
 
 
-#' @title Maximum Likelihood Fitting for the GEV distibution in the presence of Historical Data
+#' @title Maximum Likelihood Fitting for the GEV distribution in the presence of Historical Data
 #' @description ML fitting procedures for sample of both systematic and historical data. Function structure inspired by \code{gev.fit} in ismev. 
 #' Arguments naming and likelihood implementation follow Stedinger and Cohn (1986). 
 #' @param xdat vector of historical and systematic/observed data - the first k elements of the vector should be the historical events
@@ -147,20 +152,29 @@ glo.hist.fit<-
 #' @param muinit initial values for the location parameter
 #' @param siginit initial values for the scale parameter
 #' @param shinit initial values for the shape parameter
+#' @param show  Logical; if \code{TRUE} (the default), print details of the fit.
 #' @param method The optimization method (see \code{optim} for details)
 #' @param maxit  The maximum number of iterations 
 #' @param ...	 Other control parameters for the optimization. These are passed to components of the control argument of optim.
 #' @details The form of the GEV used is that of Coles (2001) Eq (3.2). Specifically, positive values of the shape parameter imply a heavy tail, and negative values imply a bounded upper tail.
-#' @return An object of the class \code{gev.fit}. 
+#' @return An object of the class \code{gev.fit}, with additional components related to the historical data. 
+#' @seealso \code{\link{glo.hist.fit}}, \code{\link{dgev}}, Vignette on historical data
+#' @references 
+#' Hosking, J.R.M. and Wallis, J.R., 2005. Regional frequency analysis: an approach based on L-moments. Cambridge university press. 
+#' 
+#' Coles, S., 2001. An introduction to statistical modeling of extreme values. London: Springer.
+#' 
+#' Stedinger, J.R. and Cohn, T.A., 1986. Flood frequency analysis with historical and paleoflood information. Water resources research, 22(5), pp.785-793.
 #' @export
 #' @examples 
-#' # library(ismev)
+#' # check that ismev is installed 
+#' # any(rownames(installed.packages()) == "ismev")
 #' set.seed(5416574)
 #' xx <- rgev(500, 40, 6, -0.2)
 #' xxsist <- xx[471:500]; xxhist <- xx[1:470][xx[1:470] > 80]
 #' gev.hist.fit(c(xxhist,xxsist), k = length(xxhist), h = 470, X0 = 80)
 #' gev.hist.fit(c(xxhist,xxsist), k = length(xxhist), h = 470, X0 = 80, binomialcens = TRUE)
-#' ismev::gev.fit(xxsist) # note the higher standard errors  
+#' gevd.fit(xxsist) # note the higher standard errors  
 gev.hist.fit <-
   function(xdat, k=0, h=NULL, X0=NULL, binomialcens=FALSE, 
            mulink = identity, siglink = identity, shlink = identity, 
@@ -191,7 +205,7 @@ gev.hist.fit <-
   }
   else {
     z$trans <- TRUE
-    mumat <- cbind(rep(1, length(xdat)), ydat[, mul])
+    mumat <- cbind(rep(1, length(xdat)))
     if (is.null(muinit)) 
       muinit <- c(in1, rep(0, length(mul)))
   }
@@ -202,7 +216,7 @@ gev.hist.fit <-
   }
   else {
     z$trans <- TRUE
-    sigmat <- cbind(rep(1, length(xdat)), ydat[, sigl])
+    sigmat <- cbind(rep(1, length(xdat)))
     if (is.null(siginit)) 
       siginit <- c(in2, rep(0, length(sigl)))
   }
@@ -213,7 +227,7 @@ gev.hist.fit <-
   }
   else {
     z$trans <- TRUE
-    shmat <- cbind(rep(1, length(xdat)), ydat[, shl])
+    shmat <- cbind(rep(1, length(xdat)))
     if (is.null(shinit)) 
       shinit <- c(0.1, rep(0, length(shl)))
   }
@@ -223,7 +237,7 @@ gev.hist.fit <-
   
   gev.hist.lik <- function(a,h,k,binomialcens) {
     # computes neg log lik of gev model
-    # uses COles' formulation of the F(x) and f(x) of a GEV
+    # uses Coles' formulation of the F(x) and f(x) of a GEV
     # the shape parameter is the negative of the one used in Hosking and Wallis 
     # so it must be interpreted in the opposite way than for the GLO
     # this is a mess, I am sorry... 

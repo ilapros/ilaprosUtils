@@ -2,12 +2,12 @@
 % Please edit documentation in R/withHist.R
 \name{gev.hist.fit}
 \alias{gev.hist.fit}
-\title{Maximum Likelihood Fitting for the GEV distibution in the presence of Historical Data}
+\title{Maximum Likelihood Fitting for the GEV distribution in the presence of Historical Data}
 \usage{
-gev.hist.fit(xdat, k = 0, h = NULL, X0 = NULL, binomialcens = FALSE,
-  mulink = identity, siglink = identity, shlink = identity,
-  muinit = NULL, siginit = NULL, shinit = NULL, show = TRUE,
-  method = "Nelder-Mead", maxit = 10000, ...)
+gev.hist.fit(xdat, k = 0, h = NULL, X0 = NULL,
+  binomialcens = FALSE, mulink = identity, siglink = identity,
+  shlink = identity, muinit = NULL, siginit = NULL, shinit = NULL,
+  show = TRUE, method = "Nelder-Mead", maxit = 10000, ...)
 }
 \arguments{
 \item{xdat}{vector of historical and systematic/observed data - the first k elements of the vector should be the historical events}
@@ -32,6 +32,8 @@ gev.hist.fit(xdat, k = 0, h = NULL, X0 = NULL, binomialcens = FALSE,
 
 \item{shinit}{initial values for the shape parameter}
 
+\item{show}{Logical; if \code{TRUE} (the default), print details of the fit.}
+
 \item{method}{The optimization method (see \code{optim} for details)}
 
 \item{maxit}{The maximum number of iterations}
@@ -39,7 +41,7 @@ gev.hist.fit(xdat, k = 0, h = NULL, X0 = NULL, binomialcens = FALSE,
 \item{...}{Other control parameters for the optimization. These are passed to components of the control argument of optim.}
 }
 \value{
-An object of the class \code{gev.fit}.
+An object of the class \code{gev.fit}, with additional components related to the historical data.
 }
 \description{
 ML fitting procedures for sample of both systematic and historical data. Function structure inspired by \code{gev.fit} in ismev. 
@@ -49,12 +51,22 @@ Arguments naming and likelihood implementation follow Stedinger and Cohn (1986).
 The form of the GEV used is that of Coles (2001) Eq (3.2). Specifically, positive values of the shape parameter imply a heavy tail, and negative values imply a bounded upper tail.
 }
 \examples{
-# library(ismev)
+# check that ismev is installed 
+# any(rownames(installed.packages()) == "ismev")
 set.seed(5416574)
 xx <- rgev(500, 40, 6, -0.2)
 xxsist <- xx[471:500]; xxhist <- xx[1:470][xx[1:470] > 80]
 gev.hist.fit(c(xxhist,xxsist), k = length(xxhist), h = 470, X0 = 80)
 gev.hist.fit(c(xxhist,xxsist), k = length(xxhist), h = 470, X0 = 80, binomialcens = TRUE)
-ismev::gev.fit(xxsist) # note the higher standard errors  
+gevd.fit(xxsist) # note the higher standard errors  
 }
+\references{
+Hosking, J.R.M. and Wallis, J.R., 2005. Regional frequency analysis: an approach based on L-moments. Cambridge university press. 
 
+Coles, S., 2001. An introduction to statistical modeling of extreme values. London: Springer.
+
+Stedinger, J.R. and Cohn, T.A., 1986. Flood frequency analysis with historical and paleoflood information. Water resources research, 22(5), pp.785-793.
+}
+\seealso{
+\code{\link{glo.hist.fit}}, \code{\link{dgev}}, Vignette on historical data
+}

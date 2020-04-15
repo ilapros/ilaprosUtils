@@ -12,8 +12,10 @@ meanNOTna(x)
 \value{
 The mean of the vector when NAs are excluded, just \code{mean(x, na.rm=TRUE)}
 }
+\description{
+Mean without NAs
+}
 \examples{
 x <- c(5,12,NA,4)
 meanNOTna(x)
 }
-

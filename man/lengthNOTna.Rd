@@ -12,8 +12,10 @@ lengthNOTna(x)
 \value{
 The length of the vector when NAs are excluded
 }
+\description{
+Length without NAs
+}
 \examples{
 x <- c(5,12,NA,4)
 lengthNOTna(x)
 }
-

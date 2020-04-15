@@ -12,6 +12,5 @@ gloq(p, loc, scale, sh)
 \item{loc, scale, sh}{the locatio, scale, shape parameters}
 }
 \description{
-This function gives quantiles the GLo distribution. It's built mirroring the \code{gev.fit} function of \code{ismev}. This is the same as qglo, just used to mimic ismev
+This function gives quantiles the GLO distribution. It's built mirroring the \code{gev.fit} function of \code{ismev}. This is the same as qglo, just used to mimic ismev
 }
-

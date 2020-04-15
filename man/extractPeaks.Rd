@@ -4,7 +4,8 @@
 \alias{extractPeaks}
 \title{Extracting peaks}
 \usage{
-extractPeaks(vecTime = NULL, vecObs, mintimeDiff = 73, thrConst = (2/3))
+extractPeaks(vecTime = NULL, vecObs, mintimeDiff = 73,
+  thrConst = (2/3))
 }
 \arguments{
 \item{vecTime}{an optional numeric vector containing information on the time variable. 
@@ -30,7 +31,7 @@ if the minimumn amount of water in the though is less than \code{thrConst} the v
 \code{mintimeDiff} can not be given as an actual time measuraments, it is just an indicator of how many postions apart 
 in the \code{vecTIme} vector two peaks need to be to be considered independent. 
 Therefore \code{vecTIme} needs to be equally spaced, 
-e.g. if missing values are present in the orignal file they should be infilled.
+e.g. if missing values are present in the original file they should be infilled.
 }
 \examples{
 zz <- data.frame(hour=seq(1, 240),
@@ -42,4 +43,3 @@ points(zz$hour[zz$isPeak==1], zz$flow[zz$isPeak==1], col=2)
 zz$isPeak <- extractPeaks(vecTime=zz$hour,vecObs=zz$flow,mintimeDiff=8)
 points(zz$hour[zz$isPeak==1], zz$flow[zz$isPeak==1], col=4)
 }
-

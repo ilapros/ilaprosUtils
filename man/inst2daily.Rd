@@ -17,18 +17,15 @@ Use ordere factors if the data need to be in the same order.}
 }
 \value{
 an object of the same class and size as zz, 
-in which only values wich are the maximum value for the indVec column in the indFac groups are kept.
+in which only values which are the maximum value for the indVec column 
+in the indFac groups are kept.
 }
 \description{
 Given a data.frame or matrix, keeps rows which correspond to the maximum for each level of indFac.
 }
 \details{
 As the name betrays this was built to process 15-minutes data and identify daily maxima. 
-It still work to extract monthy or annual maxima. 
-
-
-
-Could probably be achived via dplyr as well.
+It still work to extract monthly or annual maxima.
 }
 \examples{
 set.seed(145)
@@ -39,4 +36,3 @@ inst2daily(zz, indVec=2, indFac = 1)
 zz$month <- factor(zz$month, levels = c("Jan","Feb","Mar","Apr"), ordered = TRUE)
 inst2daily(zz, indVec=2, indFac = 1)
 }
-

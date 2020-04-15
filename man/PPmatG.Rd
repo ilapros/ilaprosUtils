@@ -4,23 +4,29 @@
 \alias{PPmatG}
 \title{Plotting positions of a matrix of data}
 \usage{
-PPmatG(mat, cols = NULL, fit.lines = "gev", ff = seq(0.005, 0.995, by =
-  0.0025), yll = NULL, timeGrid = TRUE, ...)
+PPmatG(mat, cols = NULL, fit.lines = "gev", ff = seq(0.005, 0.995, by
+  = 0.0025), yll = NULL, timeGrid = TRUE, vgrid = c(1.2, 2, 5, 10,
+  50, 100, 200), ...)
 }
 \arguments{
-\item{mat}{data matrix, each column will be analaysed seperately}
+\item{mat}{data matrix, each column will be analysed separately.}
 
-\item{cols}{colour in which the data points of each column (and estimated line) should be dislayed}
+\item{cols}{colour in which the data points of each column (and estimated line) should be displayed}
 
 \item{fit.lines}{a character string indicating the distribution to be used to draw the fitted line. 
 Current options are "gev" (default), "glo", "gamma", "gpa" and "none" which results in no lines}
 
 \item{ff}{the non-exceedance probabilities for which the lines are estimated. 
-It also affects the width of the x-axis. Defaul is \code{seq(0.005,0.995,by=0.0025)}.}
+It also affects the width of the x-axis. Default is \code{seq(0.005,0.995,by=0.0025)}.}
 
 \item{yll}{ylimits (optional)}
 
-\item{timeGrid}{logical. Should a time grid with years corrsponding to key non-excedances be dispalyed.}
+\item{timeGrid}{logical. If \code{TRUE} a time grid with return periods expressed in years
+corresponding to values in \code{vgrid} will be displayed.}
+
+\item{vgrid}{return periods expressed in years shown as a grid}
+
+\item{...}{other parameters passed into \code{plot}}
 }
 \value{
 A plot with the plotting positions of each column and a matrix of the estimated parameters
@@ -35,7 +41,5 @@ If a distribution is given to fit.lines, it adds an estimated return level curve
 x <- matrix(c(rgev(20, 10, 3,   -0.2), 
               rgev(20, 15, 4.5, -0.2), 
               rgev(20, 40, 6.5, -0.2)),byrow = FALSE, ncol=3)
-library(lmom)
 PPmatG(x, cols = c(4,5,2), fit.lines = "gev")
 }
-

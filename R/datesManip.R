@@ -1,6 +1,8 @@
 #' @title Functions to transform dates into other useful information
 #' @name dates transformation 
-#' @param datevec a vetor of dates (\code{class(x)} must be Date)
+#' @param datevec a vetor of dates (\code{class(datevec)} must be Date)
+#' @param endMonth the month which indicates the end of the Water Year or Summer Season (default is 9, September)
+#' @param begMonth the month which indicates the beginning of summer  (default is 4, April)
 #' @return The year, water year or month from the input date. Or a 0-1 indicator of summer.
 #' @export
 date2year <- function(datevec) as.numeric(substring(datevec,first=1,last=4)) 

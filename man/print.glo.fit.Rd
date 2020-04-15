@@ -2,19 +2,22 @@
 % Please edit documentation in R/ismevExtension.R
 \name{print.glo.fit}
 \alias{print.glo.fit}
-\title{nicer print of glo.fit results}
+\title{Nicer print of glo.fit results}
 \usage{
-\method{print}{glo.fit}(fitobj)
+\method{print}{glo.fit}(x, ...)
 }
 \arguments{
-\item{fitobj}{a fitted object of the class glo.fit}
+\item{x}{a fitted object of the class glo.fit.}
+
+\item{...}{further arguments passed to \code{print}.}
 }
 \description{
 This function prints the MLE, se, convergence info and negative log-likelihood value.
 }
 \examples{
 library(ismev)
-print(glo.fit(c(50,45,65,78,12,23),show=FALSE))
+print(glod.fit(c(50,45,65,78,12,23),show=FALSE))
 }
-\keyword{glo.fit}
-
+\seealso{
+glod.fit
+}

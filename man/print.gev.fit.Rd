@@ -2,12 +2,14 @@
 % Please edit documentation in R/ismevExtension.R
 \name{print.gev.fit}
 \alias{print.gev.fit}
-\title{nicer print of gev.fit results}
+\title{Nicer print of gev.fit results}
 \usage{
-\method{print}{gev.fit}(fitobj)
+\method{print}{gev.fit}(x, ...)
 }
 \arguments{
-\item{fitobj}{a fitted object of the class gev.fit}
+\item{x}{a fitted object of the class gev.fit.}
+
+\item{...}{further arguments passed to \code{print}.}
 }
 \description{
 This function prints the MLE, se, convergence info and negative log-likelihood value.
@@ -15,6 +17,8 @@ This function prints the MLE, se, convergence info and negative log-likelihood v
 \examples{
 # library(ismev)
 print(ismev::gev.fit(c(50,45,65,78,12,23),show=FALSE))
+print(gevd.fit(c(50,45,65,78,12,23),show=FALSE))
 }
-\keyword{gev.fit}
-
+\seealso{
+gevd.fit, isemv::gev.fit
+}

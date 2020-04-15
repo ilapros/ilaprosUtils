@@ -11,24 +11,31 @@
 #' It takes each columns of a matrix and plots them as Gringorten plotting positions. 
 #' The x-axis is shown using the Gumbel variate \code{-log(-log(f))}, with f the non exceedance probability
 #' If a distribution is given to fit.lines, it adds an estimated return level curve based on L-moments estimate
-#' @param mat data matrix, each column will be analaysed seperately
-#' @param cols colour in which the data points of each column (and estimated line) should be dislayed
+#' @param mat data matrix, each column will be analysed separately.
+#' @param cols colour in which the data points of each column (and estimated line) should be displayed
 #' @param fit.lines a character string indicating the distribution to be used to draw the fitted line. 
 #' Current options are "gev" (default), "glo", "gamma", "gpa" and "none" which results in no lines
 #' @param ff the non-exceedance probabilities for which the lines are estimated. 
-#' It also affects the width of the x-axis. Defaul is \code{seq(0.005,0.995,by=0.0025)}.
+#' It also affects the width of the x-axis. Default is \code{seq(0.005,0.995,by=0.0025)}.
 #' @param yll ylimits (optional)
-#' @param timeGrid logical. Should a time grid with years corrsponding to key non-excedances be dispalyed.
+#' @param timeGrid logical. If \code{TRUE} a time grid with return periods expressed in years
+#' corresponding to values in \code{vgrid} will be displayed.
+#' @param vgrid return periods expressed in years shown as a grid
+#' @param ... other parameters passed into \code{plot} 
 #' @return A plot with the plotting positions of each column and a matrix of the estimated parameters  
 #' @examples
 #' x <- matrix(c(rgev(20, 10, 3,   -0.2), 
 #'               rgev(20, 15, 4.5, -0.2), 
 #'               rgev(20, 40, 6.5, -0.2)),byrow = FALSE, ncol=3)
-#' library(lmom)
 #' PPmatG(x, cols = c(4,5,2), fit.lines = "gev")
 #' @export
 #' @import lmom
-PPmatG <- function(mat,cols=NULL,fit.lines="gev",ff=seq(0.005,0.995,by=0.0025),yll=NULL,timeGrid=TRUE,...){
+PPmatG <- function(mat,cols=NULL,fit.lines="gev",
+                   ff=seq(0.005,0.995,by=0.0025),
+                   yll=NULL,
+                   timeGrid=TRUE, 
+                   vgrid = c(1.2,2,5,10,50,100,200),
+                   ...){
   if(is.null(cols) | length(cols)<ncol(mat)) cols<-seq(1,ncol(mat))
   if(is.null(yll)) yll<-c(0,1.2*max(mat[,1:ncol(mat)],na.rm=TRUE))
   prevPlot<-FALSE
@@ -62,8 +69,10 @@ PPmatG <- function(mat,cols=NULL,fit.lines="gev",ff=seq(0.005,0.995,by=0.0025),y
         }
     }    
  if(timeGrid){
-       abline(v=-log(-log(1-1/c(1.2,2,5,10,50,100,200))),lty=2,col=8)
-       axis(3,col=0,at=-log(-log(1-1/c(1.2,2,5,10,50,100,200))),labels=paste(c(1.2,2,5,10,50,100,200),"yrs"),cex.axis=.75,line=-1,cex=0.8)
+       abline(v=-log(-log(1-1/vgrid)),lty=2,col=8)
+       axis(3,col=0,at=-log(-log(1-1/vgrid)),
+            labels=paste(vgrid,"yrs"),
+            cex.axis=.75,line=-1,cex=0.8)
      } 
   }
   invisible(mat.pars)
@@ -75,10 +84,10 @@ PPmatG <- function(mat,cols=NULL,fit.lines="gev",ff=seq(0.005,0.995,by=0.0025),y
 #' @description This can be useful in combination with PPmatG. 
 #' The x-axis is shown using the Gumbel variate \code{-log(-log(f))}, with f the non exceedance probability. 
 #' If a distribution is given to fit.lines, it adds an estimated return level curve based on L-moments estimate.
-#' @param mat data matrix, each column will be analaysed seperately.
+#' @param mat data matrix, each column will be analysed seperately.
 #' @param pars matrix of parameter estimates. 
 #' Each column should correspond to a parameter, each line to an observation (station).
-#' @param cols colour in which the lines points of each row should be dislayed
+#' @param cols colour in which the lines points of each row should be displayed
 #' @param fit.lines a character string indicating the distribution to be used to draw the fitted line. 
 #' Current options are "gev" (default), "glo", "gpa", "gamma"
 #' @param ff the non-exceedance probabilities for which the lines are estimated
