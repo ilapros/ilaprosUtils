@@ -1,13 +1,11 @@
 .Rhistory
 .RData
 .Rproj.user
-.Rproj
+*.Rproj
 *.svx
 inst/doc
 doc
 Meta
 devs
-
-*.Rproj
 
 ..Rcheck/

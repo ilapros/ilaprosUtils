@@ -1,20 +1,28 @@
 Package: ilaprosUtils
-Title: A miscellaneous collection of functions I tend to use
+Title: A Miscellaneous Collection of Functions I Tend to Use
 Version: 0.1.1
-Authors@R: "Ilaria Prosdocimi <prosdocimi.ilaria@gmail.com> [aut, cre]"
+Authors@R: c(person("Ilaria", "Prosdocimi", 
+                  email = "prosdocimi.ilaria@gmail.com",
+                  role = c("aut", "cre"),
+                  comment = c(ORCID = "https://orcid.org/0000-0001-8565-094X")))
+Maintainer: Ilaria Prosdocimi <prosdocimi.ilaria@gmail.com>
 Description: Some Functions I use to handle the Flow/Rainfall data I get. And
     some addition to the ismev package that I find useful (notably, fitting the GLO
-    distribution and allowing the inclusion of non-systematic data). Some stuff on
-    Lmoments as well - which mostly need lmom to be loaded.
+    and Kappa distribution and allowing the inclusion of non-systematic data). 
 Depends:
     R (>= 3.2.3)
 Imports:
     lmom,
-    ismev
-License: GPL3.0
+    ismev,
+    stats,
+    graphics
+License: GPL-3
 LazyData: false
 Roxygen: list(wrap = FALSE)
 Suggests:
-    knitr
+    knitr,
+    testthat,
+    rmarkdown
 VignetteBuilder: knitr
-RoxygenNote: 5.0.1
+RoxygenNote: 6.1.1
+Encoding: UTF-8
