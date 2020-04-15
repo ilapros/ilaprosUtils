@@ -1,6 +1,6 @@
 Package: ilaprosUtils
 Title: A Miscellaneous Collection of Functions I Tend to Use
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: c(person("Ilaria", "Prosdocimi", 
                   email = "prosdocimi.ilaria@gmail.com",
                   role = c("aut", "cre"),
