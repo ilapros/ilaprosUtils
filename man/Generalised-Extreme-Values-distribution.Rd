@@ -8,11 +8,11 @@
 \alias{qgev}
 \title{The Generalised Extreme Values distribution}
 \usage{
-dgev(x, loc, scale, sh)
+dgev(x, loc, scale, sh, log = FALSE)
 
-pgev(q, loc, scale, sh, lower.tail = TRUE)
+pgev(q, loc, scale, sh, lower.tail = TRUE, log.p = FALSE)
 
-qgev(p, loc, scale, sh, lower.tail = TRUE)
+qgev(p, loc, scale, sh, lower.tail = TRUE, log.p = FALSE)
 
 rgev(n, loc, scale, sh)
 }
@@ -24,6 +24,8 @@ rgev(n, loc, scale, sh)
 \item{scale}{scale parameter}
 
 \item{sh}{shape parameter}
+
+\item{log, log.p}{logical; if TRUE, probabilities p are given as log(p)}
 
 \item{lower.tail}{logical; if \code{TRUE} (default), probabilities are \eqn{P[X \leq x]} otherwise, \eqn{P[X > x]}}
 

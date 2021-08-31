@@ -8,13 +8,13 @@
 \alias{qkappa}
 \title{The Kappa distribution}
 \usage{
-pkappa(q, loc, scale, sh, sh2, lower.tail = TRUE)
+pkappa(q, loc, scale, sh, sh2, lower.tail = TRUE, log.p = FALSE)
 
 rkappa(n, loc, scale, sh, sh2)
 
-qkappa(p, loc, scale, sh, sh2, lower.tail = TRUE)
+qkappa(p, loc, scale, sh, sh2, lower.tail = TRUE, log.p = TRUE)
 
-dkappa(x, loc, scale, sh, sh2)
+dkappa(x, loc, scale, sh, sh2, log = FALSE)
 }
 \arguments{
 \item{loc}{location parameter}
@@ -32,6 +32,8 @@ dkappa(x, loc, scale, sh, sh2)
 \item{p}{vector of probabilities}
 
 \item{x, q}{vector of quantiles}
+
+\item{log, log.p}{logical; if TRUE, probabilities p are given as log(p)}
 }
 \value{
 dkappa gives the density, pkappa gives the distribution function, 

@@ -1,4 +1,74 @@
 
+#----- the Gumbel distribution -------
+#' @title The Gumbel distribution
+#' @description Density, distribution function, quantile function and random generation for 
+#' the Gumbel distribution with location parameter equal to \code{loc}, 
+#' scale parameter equal to \code{scale}. This corresponds to a GEV 
+#' distribution with shape parameter equal to 0. 
+#' @param loc location parameter
+#' @param scale scale parameter
+#' @param n number of observations. If \code{length(n) > 1}, the length is taken to be the number required.
+#' @param x,q vector of quantiles
+#' @param p vector of probabilities
+#' @param log,log.p	logical; if TRUE, probabilities p are given as log(p)
+#' @param lower.tail logical; if \code{TRUE} (default), probabilities are \eqn{P[X \leq x]} otherwise, \eqn{P[X > x]}
+#' @keywords Gumbel distribution
+#' @aliases pgum dgum rgum qggum
+#' @name Gumbel distribution 
+#' @return dgum gives the density, pgum gives the distribution function, 
+#' qgum gives the quantile function, and rgum generates random deviates.
+#' The length of the result is determined by n for rgev, 
+#' and is the maximum of the lengths of the numerical arguments for the other functions.
+#' The numerical arguments are recycled to the length of the result. 
+#' Only the first elements of the logical arguments are used.
+#' @family gumbel distribution
+#' @export
+#' @examples 
+#' curve(dgum(x,4,6), from=-15, to = 40,type="l")
+#' plot(ecdf(rgum(100,4,6)))
+#' lines(seq(-15,40,by=0.5),pgum(seq(-15,40,by=0.5),4,6),col=2)
+#' qgum(c(0.5,0.99,0.995,0.995,0.999),4,6) 
+#' # notable quantiles
+dgum<-function(x, loc, scale, log = FALSE){
+  # Density function
+  allTogether <- cbind(x,loc,scale)
+  allTogether <- cbind(allTogether,rep(0,nrow(allTogether)))
+  apply(allTogether,1, dgev_int, log = log)
+}
+
+#' @name Gumbel distribution 
+#' @family gumbel distribution
+#' @export
+pgum<-function(q,loc,scale,lower.tail=TRUE, log.p = FALSE){
+  allTogether <- cbind(q,loc,scale)
+  allTogether <- cbind(allTogether,rep(0,nrow(allTogether)))
+  apply(allTogether,1, pgev_int, lower.tail=lower.tail,log.p=log.p)
+}
+
+#' @name Gumbel distribution 
+#' @family gumbel distribution
+#' @export
+qgum<-function(p,loc,scale,lower.tail=TRUE,log.p =FALSE){
+  allTogether <- cbind(p,loc,scale)
+  allTogether <- cbind(allTogether,rep(0,nrow(allTogether)))
+  apply(allTogether,1, qgev_int, lower.tail=lower.tail,log.p =log.p)
+}
+
+#' @name Gumbel distribution 
+#' @family gumbel distribution
+#' @export
+rgum<-function(n,loc,scale){
+  # generate n random variates
+  allTogether <- cbind(rep(loc, length.out=n), 
+                       rep(scale, length.out=n),
+                       rep(0, length.out=n))
+  ## add random percentiles
+  allTogether <- cbind(runif(n), allTogether)
+  apply(allTogether, 1, qgev_int, lower.tail=FALSE)
+}
+
+
+
 #----- the GEV distributon -------
 #' @title The Generalised Extreme Values distribution
 #' @description Density, distribution function, quantile function and random generation for 
@@ -12,6 +82,7 @@
 #' @param n number of observations. If \code{length(n) > 1}, the length is taken to be the number required.
 #' @param x,q vector of quantiles
 #' @param p vector of probabilities
+#' @param log,log.p	logical; if TRUE, probabilities p are given as log(p)
 #' @param lower.tail logical; if \code{TRUE} (default), probabilities are \eqn{P[X \leq x]} otherwise, \eqn{P[X > x]}
 #' @keywords Generalised Extreme Values distribution
 #' @aliases pgev dgev rgev qgev
@@ -40,48 +111,50 @@
 #' lines(seq(-15,40,by=0.5),pgev(seq(-15,40,by=0.5),4,6,0.2),col=2)
 #' qgev(c(0.5,0.99,0.995,0.995,0.999),4,6,0.2) 
 #' # notable quantiles
-dgev<-function(x, loc, scale, sh){
+dgev<-function(x, loc, scale, sh, log = FALSE){
   # Density function
   allTogether <- cbind(x,loc,scale,sh)
-  apply(allTogether,1, dgev_int)
+  apply(allTogether,1, dgev_int, log = log)
 }
 
-dgev_int<-function(x){
+dgev_int<-function(x, log = FALSE){
   loc = x[2]; scale= x[3]; sh= x[4]; x = x[1]
   # Density function
   if(sh> -1e-07 & sh< 1e-07) {tx<-exp(-(x-loc)/scale)}
   else {tx<-(1+(-(x-loc)/scale)*sh)^(1/sh)}
   dgev<-(1/scale)*(tx^(-sh+1))*exp(-tx)
+  if(log) dgev <- log(dgev)
   dgev
 }
 
 #' @name Generalised Extreme Values distribution 
 #' @family gev distribution
 #' @export
-pgev<-function(q,loc,scale,sh, lower.tail=TRUE){
+pgev<-function(q,loc,scale,sh, lower.tail=TRUE, log.p = FALSE){
     allTogether <- cbind(q,loc,scale,sh)
-    apply(allTogether,1, pgev_int, lower.tail=lower.tail)
+    apply(allTogether,1, pgev_int, lower.tail=lower.tail,log.p=log.p)
 }
   
-pgev_int<-function(x,lower.tail=lower.tail){
+pgev_int<-function(x,lower.tail=lower.tail,log.p=log.p){
   q = x[1];loc = x[2]; scale= x[3]; sh= x[4] 
-  # Cummulative distribution function
+  # Cumulative distribution function
   if(sh> -1e-07 & sh< 1e-07) {pgev<-exp(-exp(-(q-loc)/scale))}
   else {pgev<-exp(-(1-sh*(q-loc)/scale)^(1/sh))}
-  if(!lower.tail) pgev <- 1-pgev
-  pgev
+  if(lower.tail) return(ifelse(log.p, log(pgev), pgev))
+  else return(ifelse(log.p, log(1-pgev), 1-pgev))
 }
 
 #' @name Generalised Extreme Values distribution 
 #' @family gev distribution
 #' @export
-qgev<-function(p,loc,scale,sh, lower.tail=TRUE){
+qgev<-function(p,loc,scale,sh, lower.tail=TRUE,log.p =FALSE){
   allTogether <- cbind(p,loc,scale,sh)
-  apply(allTogether,1, qgev_int, lower.tail=lower.tail)
+  apply(allTogether,1, qgev_int, lower.tail=lower.tail,log.p =log.p)
 }
   
-qgev_int<-function(x,lower.tail=lower.tail){
+qgev_int<-function(x,lower.tail=TRUE,log.p =FALSE){
   p = x[1];loc = x[2]; scale= x[3]; sh= x[4] 
+  p <- ifelse(log.p,exp(p),p)
   # Quantile function
   if(!lower.tail) p <- 1-p
   # Send non-exceedance probability
@@ -123,6 +196,7 @@ rgev<-function(n,loc,scale,sh){
 #' @param n number of observations. If \code{length(n) > 1}, the length is taken to be the number required.
 #' @param x,q vector of quantiles
 #' @param p vector of probabilities
+#' @param log,log.p	logical; if TRUE, probabilities p are given as log(p)
 #' @param lower.tail logical; if \code{TRUE} (default), probabilities are \eqn{P[X \leq x]} otherwise, \eqn{P[X > x]}
 #' @return dglo gives the density, pglo gives the distribution function, qglo gives the quantile function, 
 #' and rglo generates random deviates. The length of the result is determined by n for rglo, 
@@ -141,18 +215,19 @@ rgev<-function(n,loc,scale,sh){
 #' qglo(c(0.5,0.99,0.995,0.995,0.999),4,6,-0.2) 
 #' # notable quantiles
 
-dglo<-function(x, loc, scale, sh){
+dglo<-function(x, loc, scale, sh,log=FALSE){
   # Density function
   allTogether <- cbind(x,loc,scale,sh)
-  apply(allTogether,1, dglo_int)
+  apply(allTogether,1, dglo_int,log=log)
 }
 
-dglo_int<-function(x){
+dglo_int<-function(x,log){
   loc = x[2]; scale= x[3]; sh= x[4]; x = x[1]
   # Density function
   if(sh> -1e-07 & sh< 1e-07) {tx <- (x-loc)/scale}
   else{tx <- (-1/sh)*log(1-sh*(x-loc)/scale)}
   dglo <- (1/scale)*exp(-(1-sh)*tx)/((1+exp(-tx))^2)
+  dglo <- ifelse(log,log(dglo),dglo)
   dglo
 }
 
@@ -161,19 +236,19 @@ dglo_int<-function(x){
 #' @name Generalised Logistic distribution
 #' @family glo distribution
 #' @export
-pglo<-function(q,loc,scale,sh, lower.tail=TRUE){
+pglo<-function(q,loc,scale,sh, lower.tail=TRUE,log.p=FALSE){
   allTogether <- cbind(q,loc,scale,sh)
-  apply(allTogether,1, pglo_int, lower.tail=lower.tail)
+  apply(allTogether,1, pglo_int, lower.tail=lower.tail,log.p=log.p)
 }
 
-pglo_int<-function(x,lower.tail=lower.tail){
+pglo_int<-function(x,lower.tail=lower.tail,log.p=FALSE){
   q = x[1];loc = x[2]; scale= x[3]; sh= x[4] 
-  # Cummulative distribution function
+  # Cumulative distribution function
   if(sh> -1e-07 & sh< 1e-07) {tx<-(x-loc)/scale}
   else {tx<-(-1/sh)*log(1-sh*(q-loc)/scale)}
   pglo<-1/(1+exp(-tx))
-  if(!lower.tail) pglo <- 1-pglo
-  pglo
+  if(lower.tail) return(ifelse(log.p, log(pglo), pglo))
+  else return(ifelse(log.p, log(1-pglo), 1-pglo))
 }
 
 
@@ -181,13 +256,14 @@ pglo_int<-function(x,lower.tail=lower.tail){
 #' @name Generalised Logistic distribution
 #' @family glo distribution
 #' @export
-qglo<-function(p,loc,scale,sh, lower.tail=TRUE){
+qglo<-function(p,loc,scale,sh, lower.tail=TRUE,log.p=FALSE){
   allTogether <- cbind(p,loc,scale,sh)
-  apply(allTogether,1, qglo_int, lower.tail=lower.tail)
+  apply(allTogether,1, qglo_int, lower.tail=lower.tail,log.p=log.p)
 }
 
-qglo_int<-function(x,lower.tail=lower.tail){
+qglo_int<-function(x,lower.tail=TRUE,log.p=FALSE){
   p = x[1];loc = x[2]; scale= x[3]; sh= x[4] 
+  p <- ifelse(log.p,exp(p),p)
   # Quantile function
   if(!lower.tail) p <- 1-p
   if(sh> -1e-07 & sh< 1e-07) loc - scale * (log((1 - p)/p))

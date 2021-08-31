@@ -4,11 +4,25 @@
 \alias{glocvd.fit}
 \title{Maximum Likelihood Fitting for the GLO distribution - CV model}
 \usage{
-glocvd.fit(xdat, ydat = NULL, mul = NULL, taul = NULL, shl = NULL,
-  mulink = identity, taulink = identity, shlink = identity,
-  muinit = NULL, tauinit = NULL, shinit = NULL, show = TRUE,
-  method = "Nelder-Mead", optimPars = NULL, maxit = 10000,
-  fixedPars = list(mu = NULL, tau = NULL, sh = NULL), ...)
+glocvd.fit(
+  xdat,
+  ydat = NULL,
+  mul = NULL,
+  taul = NULL,
+  shl = NULL,
+  mulink = identity,
+  taulink = identity,
+  shlink = identity,
+  muinit = NULL,
+  tauinit = NULL,
+  shinit = NULL,
+  show = TRUE,
+  method = "Nelder-Mead",
+  optimPars = NULL,
+  maxit = 10000,
+  fixedPars = list(mu = NULL, tau = NULL, sh = NULL),
+  ...
+)
 }
 \arguments{
 \item{xdat}{A numeric vector of data to be fitted}

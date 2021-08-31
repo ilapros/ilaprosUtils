@@ -13,6 +13,7 @@
 #' @param n number of observations. If \code{length(n) > 1}, the length is taken to be the number required.
 #' @param x,q vector of quantiles
 #' @param p vector of probabilities
+#' @param log,log.p	logical; if TRUE, probabilities p are given as log(p)
 #' @param lower.tail logical; if \code{TRUE} (default), probabilities are \eqn{P[X \leq x]} otherwise, \eqn{P[X > x]}
 #' @keywords Kappa distribution
 #' @aliases pkappa dkappa rkappa qkappa
@@ -38,15 +39,15 @@
 #' lines(seq(-20,30,by=0.5),pkappa(seq(-20,30,by=0.5),4,6,0.2,-0.4),col=2)
 #' ## notable quantiles 
 #' qkappa(c(0.5,0.99,0.995,0.995,0.999),4,6,0.2, -0.4) 
-pkappa <- function(q, loc, scale, sh, sh2, lower.tail = TRUE) {
+pkappa <- function(q, loc, scale, sh, sh2, lower.tail = TRUE, log.p=FALSE) {
   ## in HW notation 
   allTogether <- cbind(q,loc,scale,sh,sh2)
   apply(allTogether,1,
-        pkappa_int,lower.tail=lower.tail)
+        pkappa_int,lower.tail=lower.tail,log.p=log.p)
 }
 
 
-pkappa_int <- function(x, lower.tail = TRUE) {
+pkappa_int <- function(x, lower.tail = TRUE, log.p=FALSE) {
   q = x[1]; loc = x[2]; scale= x[3]; sh= x[4]; sh2 = x[5]
   ## in HW notation 
   xi = loc;  alpha = scale; k = sh; h = sh2
@@ -56,16 +57,16 @@ pkappa_int <- function(x, lower.tail = TRUE) {
   isGEV <- abs(sh2) < 10^-7
   isGLO <- (sh2 < -1+10^-7 & sh2 > -1-10^-7)
   if (isGEV) {
-    Fd <- pgev(q = q, loc = loc, scale = scale, sh = sh, lower.tail = lower.tail)
+    Fd <- pgev(q = q, loc = loc, scale = scale, sh = sh, lower.tail = lower.tail, log.p=FALSE)
   }
   if (isGLO) {
-    Fd <- pglo(q = q,loc = loc, scale = scale, sh = sh, lower.tail = lower.tail)
+    Fd <- pglo(q = q,loc = loc, scale = scale, sh = sh, lower.tail = lower.tail, log.p=FALSE)
   }
   if(!(isGEV | isGLO)){
      Fd <- (1 - h * (1-k * (q - xi)/alpha)^(1/k))^(1/h)
   }
-  if(lower.tail) return(Fd)
-  else return(1-Fd)
+  if(lower.tail) return(ifelse(log.p, log(Fd), Fd))
+  else return(ifelse(log.p, log(1-Fd), 1-Fd))
 }
 
 #' @name Kappa distribution
@@ -92,15 +93,16 @@ rkappa <- function(n, loc, scale, sh, sh2) {
 #' @name Kappa distribution
 #' @family kappa distribution
 #' @export
-qkappa <- function(p, loc, scale, sh, sh2, lower.tail = TRUE) {
+qkappa <- function(p, loc, scale, sh, sh2, lower.tail = TRUE,log.p=TRUE) {
   ## in HW notation 
   allTogether <- cbind(p,loc,scale,sh,sh2)
   apply(allTogether,1,
-        qkappa_int,lower.tail=lower.tail)
+        qkappa_int,lower.tail=lower.tail,log.p=log.p)
 }
 
-qkappa_int <- function(x, lower.tail = TRUE) {
-  p = x[1]; loc = x[2]; scale= x[3]; sh= x[4]; sh2 = x[5]
+qkappa_int <- function(x, lower.tail = TRUE, log.p = FALSE){
+  p = ifelse(log.p,exp(x[1]),x[1])
+  loc = x[2]; scale= x[3]; sh= x[4]; sh2 = x[5]
   ## in HW notation 
   xi = loc;  alpha = scale; k = sh; h = sh2
   if (abs(sh) < 10^-7) {
@@ -110,10 +112,10 @@ qkappa_int <- function(x, lower.tail = TRUE) {
   isGLO <- (sh2 < -1+10^-7 & sh2 > -1-10^-7)
 
   if (isGEV) {
-    qf <- qgev(p = p, loc = loc, scale = scale, sh = sh, lower.tail = lower.tail)
+    qf <- qgev(p = p, loc = loc, scale = scale, sh = sh, lower.tail = lower.tail, log.p = FALSE)
   }
   if (isGLO) {
-    qf <- qglo(p = p, loc = loc, scale = scale, sh = sh, lower.tail = lower.tail)
+    qf <- qglo(p = p, loc = loc, scale = scale, sh = sh, lower.tail = lower.tail, log.p = FALSE)
   }
   if(!(isGEV | isGLO)){
     if(lower.tail) qf <- xi + (alpha/k) * (1 - ((1 -p^h)/h)^k) 
@@ -125,14 +127,14 @@ qf
 #' @name Kappa distribution
 #' @family kappa distribution
 #' @export
-dkappa <- function(x, loc, scale, sh, sh2) {
+dkappa <- function(x, loc, scale, sh, sh2, log = FALSE) {
   ## in HW notation 
   allTogether <- cbind(x,loc,scale,sh,sh2)
   apply(allTogether,1,
-        dkappa_int)
+        dkappa_int, log =  log)
 }
 
-dkappa_int <- function(x) {
+dkappa_int <- function(x, log=FALSE) {
   loc = x[2]; scale= x[3]; sh= x[4]; sh2 = x[5]; x = x[1]
   ## in HW notation 
   xi = loc;  alpha = scale; k = sh; h = sh2
@@ -143,14 +145,15 @@ dkappa_int <- function(x) {
   isGLO <- (sh2 < -1+10^-7 & sh2 > -1-10^-7)
   
   if (isGEV) {
-    f <- dgev(x = x, loc = loc, scale = scale, sh = sh)
+    f <- dgev(x = x, loc = loc, scale = scale, sh = sh, log = log)
   }
   if (isGLO) {
-    f <- dglo(x = x, loc = loc, scale = scale, sh = sh)
+    f <- dglo(x = x, loc = loc, scale = scale, sh = sh, log = log)
   }
   if(!(isGEV | isGLO)){
     f <- (alpha^(-1)) * (1 - k * (x - xi)/alpha)^((1/k) - 1) * 
       (pkappa(q = x, loc = xi, scale = alpha, sh = k, sh2 = h))^(1 - h)
+    if(log) f <- log(f)
   }
   return(f)
 }
@@ -372,8 +375,8 @@ kappacvd.fit <- function(xdat, ydat = NULL, mul = NULL, taul = NULL, shl = NULL,
 #' @export
 #' @examples
 #' set.seed(12)
-#' x <- runif(500)
-#' y <- rkappa(500,loc = 40+4*x,scale = 6, sh = 0.2, sh2=-0.4)
+#' x <- runif(300)
+#' y <- rkappa(300,loc = 40+4*x,scale = 6, sh = 0.2, sh2=-0.4)
 #' fit1 <- kappad.fit(y, show=FALSE)
 #' fit1
 #' ## now add a regression model for the location
@@ -382,9 +385,9 @@ kappacvd.fit <- function(xdat, ydat = NULL, mul = NULL, taul = NULL, shl = NULL,
 #' ## now a fit with a fixed shape parameter 
 #' fitf <- kappad.fit(y, show=FALSE, fixedPars = list(sh = 0.2))
 #' fitf ## only three parameters are estimated 
-#' ## now fix the second shape parameter
-#' fitf2 <- kappad.fit(y, show=FALSE, fixedPars = list(sh2 = -0.4))
-#' fitf2 ## only three parameters are estimated 
+#' ## could also fix the second shape parameter
+#' #fitf2 <- kappad.fit(y, show=FALSE, fixedPars = list(sh2 = -0.4))
+#' #fitf2 ## only three parameters are estimated 
 kappad.fit <- function(xdat, ydat = NULL, mul = NULL, sigl = NULL, shl = NULL, sh2l = NULL,
                        mulink = identity, siglink = identity, shlink = identity, sh2link = identity,
                        muinit = NULL, siginit = NULL, shinit = NULL, sh2init = NULL, 

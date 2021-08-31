@@ -4,10 +4,23 @@
 \alias{glo.hist.fit}
 \title{Maximum Likelihood Fitting for the GLO distribution in the presence of Historical Data}
 \usage{
-glo.hist.fit(xdat, k = 0, h = NULL, X0 = NULL,
-  binomialcens = FALSE, mulink = identity, siglink = identity,
-  shlink = identity, muinit = NULL, siginit = NULL, shinit = NULL,
-  show = TRUE, method = "Nelder-Mead", maxit = 10000, ...)
+glo.hist.fit(
+  xdat,
+  k = 0,
+  h = NULL,
+  X0 = NULL,
+  binomialcens = FALSE,
+  mulink = identity,
+  siglink = identity,
+  shlink = identity,
+  muinit = NULL,
+  siginit = NULL,
+  shinit = NULL,
+  show = TRUE,
+  method = "Nelder-Mead",
+  maxit = 10000,
+  ...
+)
 }
 \arguments{
 \item{xdat}{vector of historical and systematic/observed data - the first k elements of the vector should be the historical events}

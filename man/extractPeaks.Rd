@@ -4,8 +4,7 @@
 \alias{extractPeaks}
 \title{Extracting peaks}
 \usage{
-extractPeaks(vecTime = NULL, vecObs, mintimeDiff = 73,
-  thrConst = (2/3))
+extractPeaks(vecTime = NULL, vecObs, mintimeDiff = 73, thrConst = (2/3))
 }
 \arguments{
 \item{vecTime}{an optional numeric vector containing information on the time variable. 

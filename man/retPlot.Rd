@@ -4,8 +4,16 @@
 \alias{retPlot}
 \title{Plots of return curves and confidence intervals estimated by the delta method}
 \usage{
-retPlot(obj, p = NULL, sign.alpha = 0.05, plot.out = TRUE,
-  vtype = "redVar", pch = par()$pch, pchHist = 15, ...)
+retPlot(
+  obj,
+  p = NULL,
+  sign.alpha = 0.05,
+  plot.out = TRUE,
+  vtype = "redVar",
+  pch = par()$pch,
+  pchHist = 15,
+  ...
+)
 }
 \arguments{
 \item{obj}{a \code{glo.fit} or \code{gev.fit} object}

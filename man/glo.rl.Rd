@@ -4,9 +4,16 @@
 \alias{glo.rl}
 \title{Fitted return curve for a glo.fit object}
 \usage{
-glo.rl(a, mat, dat, nh = 0, nk = 0, X0 = NULL, f = c(seq(0.01,
-  0.09, by = 0.01), 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95,
-  0.99, 0.995, 0.999))
+glo.rl(
+  a,
+  mat,
+  dat,
+  nh = 0,
+  nk = 0,
+  X0 = NULL,
+  f = c(seq(0.01, 0.09, by = 0.01), 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95,
+    0.99, 0.995, 0.999)
+)
 }
 \arguments{
 \item{a}{the mle estimates from a \code{glo.fit} object}

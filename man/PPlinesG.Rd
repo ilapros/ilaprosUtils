@@ -4,8 +4,14 @@
 \alias{PPlinesG}
 \title{Add return level curves based on a set of (estimated) parameters.}
 \usage{
-PPlinesG(mat = NULL, pars = NULL, cols = NULL, fit.lines = "gev",
-  ff = seq(0.005, 0.995, by = 0.0025), ...)
+PPlinesG(
+  mat = NULL,
+  pars = NULL,
+  cols = NULL,
+  fit.lines = "gev",
+  ff = seq(0.005, 0.995, by = 0.0025),
+  ...
+)
 }
 \arguments{
 \item{mat}{data matrix, each column will be analysed seperately.}

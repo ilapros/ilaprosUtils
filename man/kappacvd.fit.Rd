@@ -4,12 +4,28 @@
 \alias{kappacvd.fit}
 \title{Maximum Likelihood Fitting for the Kappa distribution - CV model}
 \usage{
-kappacvd.fit(xdat, ydat = NULL, mul = NULL, taul = NULL,
-  shl = NULL, sh2l = NULL, mulink = identity, taulink = identity,
-  shlink = identity, sh2link = identity, muinit = NULL,
-  tauinit = NULL, shinit = NULL, sh2init = NULL, show = TRUE,
-  method = "Nelder-Mead", optimPars = NULL, maxit = 10000,
-  fixedPars = list(mu = NULL, sig = NULL, sh = NULL, sh2 = NULL), ...)
+kappacvd.fit(
+  xdat,
+  ydat = NULL,
+  mul = NULL,
+  taul = NULL,
+  shl = NULL,
+  sh2l = NULL,
+  mulink = identity,
+  taulink = identity,
+  shlink = identity,
+  sh2link = identity,
+  muinit = NULL,
+  tauinit = NULL,
+  shinit = NULL,
+  sh2init = NULL,
+  show = TRUE,
+  method = "Nelder-Mead",
+  optimPars = NULL,
+  maxit = 10000,
+  fixedPars = list(mu = NULL, sig = NULL, sh = NULL, sh2 = NULL),
+  ...
+)
 }
 \arguments{
 \item{xdat}{A numeric vector of data to be fitted}

@@ -4,9 +4,16 @@
 \alias{PPmatG}
 \title{Plotting positions of a matrix of data}
 \usage{
-PPmatG(mat, cols = NULL, fit.lines = "gev", ff = seq(0.005, 0.995, by
-  = 0.0025), yll = NULL, timeGrid = TRUE, vgrid = c(1.2, 2, 5, 10,
-  50, 100, 200), ...)
+PPmatG(
+  mat,
+  cols = NULL,
+  fit.lines = "gev",
+  ff = seq(0.005, 0.995, by = 0.0025),
+  yll = NULL,
+  timeGrid = TRUE,
+  vgrid = c(1.2, 2, 5, 10, 50, 100, 200),
+  ...
+)
 }
 \arguments{
 \item{mat}{data matrix, each column will be analysed separately.}

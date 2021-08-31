@@ -8,11 +8,11 @@
 \alias{rglo}
 \title{The Generalised Logistic distribution}
 \usage{
-dglo(x, loc, scale, sh)
+dglo(x, loc, scale, sh, log = FALSE)
 
-pglo(q, loc, scale, sh, lower.tail = TRUE)
+pglo(q, loc, scale, sh, lower.tail = TRUE, log.p = FALSE)
 
-qglo(p, loc, scale, sh, lower.tail = TRUE)
+qglo(p, loc, scale, sh, lower.tail = TRUE, log.p = FALSE)
 
 rglo(n, loc, scale, sh)
 }
@@ -24,6 +24,8 @@ rglo(n, loc, scale, sh)
 \item{scale}{scale parameter}
 
 \item{sh}{shape parameter}
+
+\item{log, log.p}{logical; if TRUE, probabilities p are given as log(p)}
 
 \item{lower.tail}{logical; if \code{TRUE} (default), probabilities are \eqn{P[X \leq x]} otherwise, \eqn{P[X > x]}}
 

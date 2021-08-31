@@ -4,11 +4,25 @@
 \alias{gevd.fit}
 \title{Maximum Likelihood Fitting for the GEV distribution}
 \usage{
-gevd.fit(xdat, ydat = NULL, mul = NULL, sigl = NULL, shl = NULL,
-  mulink = identity, siglink = identity, shlink = identity,
-  muinit = NULL, siginit = NULL, shinit = NULL, show = TRUE,
-  method = "Nelder-Mead", optimPars = NULL, maxit = 10000,
-  fixedPars = list(mu = NULL, sig = NULL, sh = NULL), ...)
+gevd.fit(
+  xdat,
+  ydat = NULL,
+  mul = NULL,
+  sigl = NULL,
+  shl = NULL,
+  mulink = identity,
+  siglink = identity,
+  shlink = identity,
+  muinit = NULL,
+  siginit = NULL,
+  shinit = NULL,
+  show = TRUE,
+  method = "Nelder-Mead",
+  optimPars = NULL,
+  maxit = 10000,
+  fixedPars = list(mu = NULL, sig = NULL, sh = NULL),
+  ...
+)
 }
 \arguments{
 \item{xdat}{A numeric vector of data to be fitted}

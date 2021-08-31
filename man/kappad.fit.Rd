@@ -4,12 +4,28 @@
 \alias{kappad.fit}
 \title{Maximum Likelihood Fitting for the Kappa distribution}
 \usage{
-kappad.fit(xdat, ydat = NULL, mul = NULL, sigl = NULL, shl = NULL,
-  sh2l = NULL, mulink = identity, siglink = identity,
-  shlink = identity, sh2link = identity, muinit = NULL,
-  siginit = NULL, shinit = NULL, sh2init = NULL, show = TRUE,
-  method = "Nelder-Mead", optimPars = NULL, maxit = 10000,
-  fixedPars = list(mu = NULL, sig = NULL, sh = NULL, sh2 = NULL), ...)
+kappad.fit(
+  xdat,
+  ydat = NULL,
+  mul = NULL,
+  sigl = NULL,
+  shl = NULL,
+  sh2l = NULL,
+  mulink = identity,
+  siglink = identity,
+  shlink = identity,
+  sh2link = identity,
+  muinit = NULL,
+  siginit = NULL,
+  shinit = NULL,
+  sh2init = NULL,
+  show = TRUE,
+  method = "Nelder-Mead",
+  optimPars = NULL,
+  maxit = 10000,
+  fixedPars = list(mu = NULL, sig = NULL, sh = NULL, sh2 = NULL),
+  ...
+)
 }
 \arguments{
 \item{xdat}{A numeric vector of data to be fitted}
@@ -69,8 +85,8 @@ when sh2 is equal to +1 the distribution reduces to a Generalised Pareto distrib
 }
 \examples{
 set.seed(12)
-x <- runif(500)
-y <- rkappa(500,loc = 40+4*x,scale = 6, sh = 0.2, sh2=-0.4)
+x <- runif(300)
+y <- rkappa(300,loc = 40+4*x,scale = 6, sh = 0.2, sh2=-0.4)
 fit1 <- kappad.fit(y, show=FALSE)
 fit1
 ## now add a regression model for the location
@@ -79,9 +95,9 @@ fit2
 ## now a fit with a fixed shape parameter 
 fitf <- kappad.fit(y, show=FALSE, fixedPars = list(sh = 0.2))
 fitf ## only three parameters are estimated 
-## now fix the second shape parameter
-fitf2 <- kappad.fit(y, show=FALSE, fixedPars = list(sh2 = -0.4))
-fitf2 ## only three parameters are estimated 
+## could also fix the second shape parameter
+#fitf2 <- kappad.fit(y, show=FALSE, fixedPars = list(sh2 = -0.4))
+#fitf2 ## only three parameters are estimated 
 }
 \seealso{
 \link{dkappa}
