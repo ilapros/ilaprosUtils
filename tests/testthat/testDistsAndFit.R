@@ -12,6 +12,15 @@ test_that("distribution functions work", {
   expect_length(object = pkappa(4,6,c(1,2,3),-0.2,-0.3), 3)
   expect_length(object = qkappa(c(.2,.3,.6),6,c(1,2,3,1,2,3),-1,-0.3), 6)
   expect_length(object = rkappa(n = 15,6,c(0.01,3),-0.2,-0.2), 15)
+  ## test added for GEV and GLO for sensible values in pdf and cdf when x-values are out of the domain 
+  expect_lte(pgev(2*(40+5/0.2),40,5,0.2),1) ## cdf maximum value is 1 for points after upper bound
+  expect_gte(pgev((40-5/0.2)-20,40,5,-0.2),0) ## cdf has value 0 for points below lower bound 
+  expect_lte(dgev(2*(40+5/0.2),40,5,0.2),10^-7) ## cdf maximum value is 1 for points after upper bound
+  expect_lte(dgev((40-5/0.2)-10,40,5,-0.2),10^-7) ## cdf has value 0 for points below lower bound 
+  expect_lte(pglo(2*(40+5/0.2),40,5,0.2),1) ## cdf maximum value is 1 for points after upper bound
+  expect_gte(pglo((40-5/0.2)-20,40,5,-0.2),0) ## cdf has value 0 for points below lower bound 
+  expect_lte(dglo(2*(40+5/0.2),40,5,0.2),10^-7) ## cdf maximum value is 1 for points after upper bound
+  expect_lte(dglo((40-5/0.2)-10,40,5,-0.2),10^-7) ## cdf has value 0 for points below lower bound 
 })
 
 set.seed(124); y <- rglo(n = 600, 60, 5, 0.2)

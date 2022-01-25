@@ -122,7 +122,7 @@ dgev_int<-function(x, log = FALSE){
   # Density function
   if(sh> -1e-07 & sh< 1e-07) {tx<-exp(-(x-loc)/scale)}
   else {tx<-(1+(-(x-loc)/scale)*sh)^(1/sh)}
-  dgev<-(1/scale)*(tx^(-sh+1))*exp(-tx)
+  dgev<-pmax((1/scale)*(tx^(-sh+1))*exp(-tx),0, na.rm = TRUE)
   if(log) dgev <- log(dgev)
   dgev
 }
@@ -139,7 +139,14 @@ pgev_int<-function(x,lower.tail=lower.tail,log.p=log.p){
   q = x[1];loc = x[2]; scale= x[3]; sh= x[4] 
   # Cumulative distribution function
   if(sh> -1e-07 & sh< 1e-07) {pgev<-exp(-exp(-(q-loc)/scale))}
-  else {pgev<-exp(-(1-sh*(q-loc)/scale)^(1/sh))}
+  else {
+    ## if sh < 0 upper bound is loc+scale/sh
+    ## if sh > 0 lower bound is loc+scale/sh
+    q <- ifelse(sh < -10^-7, 
+                max(q, loc+scale/sh), 
+                min(q, loc+scale/sh))
+    pgev<-exp(-(1-sh*(q-loc)/scale)^(1/sh))
+    }
   if(lower.tail) return(ifelse(log.p, log(pgev), pgev))
   else return(ifelse(log.p, log(1-pgev), 1-pgev))
 }
@@ -225,8 +232,8 @@ dglo_int<-function(x,log){
   loc = x[2]; scale= x[3]; sh= x[4]; x = x[1]
   # Density function
   if(sh> -1e-07 & sh< 1e-07) {tx <- (x-loc)/scale}
-  else{tx <- (-1/sh)*log(1-sh*(x-loc)/scale)}
-  dglo <- (1/scale)*exp(-(1-sh)*tx)/((1+exp(-tx))^2)
+  else{tx <- (-1/sh)*log(pmax(1-sh*(x-loc)/scale,0))}
+  dglo <- pmax((1/scale)*exp(-(1-sh)*tx)/((1+exp(-tx))^2), 0, na.rm = TRUE)
   dglo <- ifelse(log,log(dglo),dglo)
   dglo
 }
@@ -245,7 +252,12 @@ pglo_int<-function(x,lower.tail=lower.tail,log.p=FALSE){
   q = x[1];loc = x[2]; scale= x[3]; sh= x[4] 
   # Cumulative distribution function
   if(sh> -1e-07 & sh< 1e-07) {tx<-(x-loc)/scale}
-  else {tx<-(-1/sh)*log(1-sh*(q-loc)/scale)}
+  else {
+    q <- ifelse(sh < -10^-7, 
+                max(q, loc+scale/sh), 
+                min(q, loc+scale/sh))
+    tx<-(-1/sh)*log(1-sh*(q-loc)/scale)
+    }
   pglo<-1/(1+exp(-tx))
   if(lower.tail) return(ifelse(log.p, log(pglo), pglo))
   else return(ifelse(log.p, log(1-pglo), 1-pglo))
