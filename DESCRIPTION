@@ -18,11 +18,10 @@ Imports:
     graphics
 License: GPL-3
 LazyData: false
-Roxygen: list(wrap = FALSE)
 Suggests:
     knitr,
     testthat,
     rmarkdown
 VignetteBuilder: knitr
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.1
 Encoding: UTF-8

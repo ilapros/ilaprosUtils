@@ -12,7 +12,7 @@ pkappa(q, loc, scale, sh, sh2, lower.tail = TRUE, log.p = FALSE)
 
 rkappa(n, loc, scale, sh, sh2)
 
-qkappa(p, loc, scale, sh, sh2, lower.tail = TRUE, log.p = TRUE)
+qkappa(p, loc, scale, sh, sh2, lower.tail = TRUE, log.p = FALSE)
 
 dkappa(x, loc, scale, sh, sh2, log = FALSE)
 }

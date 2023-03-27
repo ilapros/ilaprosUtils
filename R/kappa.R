@@ -93,7 +93,7 @@ rkappa <- function(n, loc, scale, sh, sh2) {
 #' @name Kappa distribution
 #' @family kappa distribution
 #' @export
-qkappa <- function(p, loc, scale, sh, sh2, lower.tail = TRUE,log.p=TRUE) {
+qkappa <- function(p, loc, scale, sh, sh2, lower.tail = TRUE,log.p=FALSE) {
   ## in HW notation 
   allTogether <- cbind(p,loc,scale,sh,sh2)
   apply(allTogether,1,
